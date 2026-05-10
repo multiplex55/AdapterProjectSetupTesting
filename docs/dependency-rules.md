@@ -30,3 +30,9 @@ This document defines the allowed crate dependency graph.
 - Workspace default lints deny `unsafe_code` and `clippy::undocumented_unsafe_blocks`.
 - FFI and selected adapter crates explicitly opt into `unsafe_code` where necessary.
 - CI runs workspace checks and Windows-slice build placeholders.
+
+
+## Current concrete crates
+
+- Target adapters: `adapters/target5`, `adapters/target10`, `adapters/commtype1`, `adapters/commtype2`, plus Windows simulation adapters.
+- C interop: raw declarations in `ffi/target-bindings`; safe wrappers in `adapters/c-drivers`; optional outward C surface in `ffi/c-api`.

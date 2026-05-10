@@ -1,0 +1,16 @@
+[package]
+name = "adapter-c-drivers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "allow"
+
+[dependencies]
+ports = { path = "../../ports" }
+messages = { path = "../../messages" }
+ffi-target-bindings = { path = "../../ffi/target-bindings" }

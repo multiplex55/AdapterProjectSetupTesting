@@ -3,6 +3,31 @@
 version = 4
 
 [[package]]
+name = "adapter-c-drivers"
+version = "0.1.0"
+dependencies = [
+ "ffi-target-bindings",
+ "messages",
+ "ports",
+]
+
+[[package]]
+name = "adapter-commtype1"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+]
+
+[[package]]
+name = "adapter-commtype2"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+]
+
+[[package]]
 name = "adapter-ethernet"
 version = "0.1.0"
 dependencies = [
@@ -14,6 +39,22 @@ dependencies = [
 
 [[package]]
 name = "adapter-sim-transport"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+]
+
+[[package]]
+name = "adapter-target10"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+]
+
+[[package]]
+name = "adapter-target5"
 version = "0.1.0"
 dependencies = [
  "messages",
@@ -68,11 +109,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
 
 [[package]]
+name = "ffi-c-api"
+version = "0.1.0"
+dependencies = [
+ "ffi-target-bindings",
+]
+
+[[package]]
 name = "ffi-c-bindings"
 version = "0.1.0"
 dependencies = [
  "messages",
 ]
+
+[[package]]
+name = "ffi-target-bindings"
+version = "0.1.0"
 
 [[package]]
 name = "itoa"
