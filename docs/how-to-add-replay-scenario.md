@@ -2,6 +2,13 @@
 
 This guide explains how to author and wire a new replay scenario using the canonical JSON replay contract.
 
+## Source of truth in code
+
+- Replay schema and canonical artifacts: [`scenarios/integration/target5_to_target10/replay-schema.json`](../scenarios/integration/target5_to_target10/replay-schema.json), [`scenarios/integration/target5_to_target10/sample-replay.json`](../scenarios/integration/target5_to_target10/sample-replay.json).
+- Compatibility parser (legacy path): [`crates/adapters/windows-sim/src/replay.rs`](../crates/adapters/windows-sim/src/replay.rs).
+- Scenario execution entrypoint: [`apps/tools/scenario-runner/src/main.rs`](../apps/tools/scenario-runner/src/main.rs).
+- Integration validation tests: [`tests/integration/tests/target5_target10_loopback.rs`](../tests/integration/tests/target5_target10_loopback.rs).
+
 ## Prerequisites
 
 Review the canonical format first:
@@ -43,3 +50,8 @@ Reference artifacts:
 
 - New scenarios must use canonical schema-driven JSON.
 - The line-based parser helper (`DeterministicReplay::from_lines`) is compatibility-only and non-canonical.
+
+
+## Boundary guardrail reminder
+
+Per [Dependency Rules](./dependency-rules.md), keep scenario parsing and host/runtime specifics out of `crates/core`; app/runtime layers compose execution while core remains platform-neutral.

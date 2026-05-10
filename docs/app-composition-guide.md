@@ -2,6 +2,12 @@
 
 This guide documents what `apps/*` mains should do (and should not do), with concrete references to current binaries.
 
+## Source of truth in code
+
+- App composition entrypoints: [`apps/target5-app/src/main.rs`](../apps/target5-app/src/main.rs), [`apps/target10-app/src/main.rs`](../apps/target10-app/src/main.rs), [`apps/windows-target5-sim/src/main.rs`](../apps/windows-target5-sim/src/main.rs), [`apps/windows-target10-sim/src/main.rs`](../apps/windows-target10-sim/src/main.rs).
+- Runtime composition/orchestration APIs: [`crates/runtime/src/startup.rs`](../crates/runtime/src/startup.rs), [`crates/runtime/src/app_profile.rs`](../crates/runtime/src/app_profile.rs).
+- Provider resolution behavior: [`crates/runtime/src/provider_registry.rs`](../crates/runtime/src/provider_registry.rs).
+
 ## Composition responsibilities in app mains
 
 App mains should:
@@ -56,3 +62,8 @@ In practice:
 - [Replay scenario format](./replay-scenario-format.md)
 - [How to add replay scenario](./how-to-add-replay-scenario.md)
 
+
+
+## Boundary guardrail reminder
+
+Reinforce [Dependency Rules](./dependency-rules.md): app mains compose only, and `crates/core` must not absorb platform-specific startup, adapter, plugin, or FFI logic.

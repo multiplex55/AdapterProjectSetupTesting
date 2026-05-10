@@ -2,6 +2,13 @@
 
 This document defines the **canonical** replay scenario format for integration scenarios.
 
+## Source of truth in code
+
+- Replay schema and artifacts: [`scenarios/integration/target5_to_target10/replay-schema.json`](../scenarios/integration/target5_to_target10/replay-schema.json), [`scenarios/integration/target5_to_target10/sample-replay.json`](../scenarios/integration/target5_to_target10/sample-replay.json).
+- Compatibility parser (non-canonical): [`crates/adapters/windows-sim/src/replay.rs`](../crates/adapters/windows-sim/src/replay.rs).
+- Scenario-driven runtime wiring: [`apps/tools/scenario-runner/src/main.rs`](../apps/tools/scenario-runner/src/main.rs), [`crates/runtime/src/startup.rs`](../crates/runtime/src/startup.rs).
+- Replay-focused tests: [`tests/integration/tests/target5_target10_loopback.rs`](../tests/integration/tests/target5_target10_loopback.rs).
+
 Canonical replay artifacts are JSON documents validated against the schema at:
 
 - [`scenarios/integration/target5_to_target10/replay-schema.json`](../scenarios/integration/target5_to_target10/replay-schema.json)
@@ -100,3 +107,8 @@ Recommended practice:
 
 - Valid sample: [`scenarios/integration/target5_to_target10/sample-replay.json`](../scenarios/integration/target5_to_target10/sample-replay.json)
 - Intentionally malformed sample: [`scenarios/integration/target5_to_target10/malformed-replay.json`](../scenarios/integration/target5_to_target10/malformed-replay.json)
+
+
+## Boundary guardrail reminder
+
+Keep replay parsing and platform/runtime orchestration out of `crates/core` per [Dependency Rules](./dependency-rules.md). Core should consume stable contracts (for example via `crates/messages`) rather than host-specific parser behavior.
