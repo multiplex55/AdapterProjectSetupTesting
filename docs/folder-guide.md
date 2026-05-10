@@ -8,6 +8,11 @@ This guide describes what belongs in each major workspace directory and what mus
 - [Testing Scope](./testing-scope.md)
 - [CLI Argument Contracts](./cli-argument-contracts.md)
 - [How to run boundary checks](./how-to-run-boundary-checks.md)
+- [Application Profile Matrix](./application-profile-matrix.md)
+- [Runtime Startup Flow](./runtime-startup-flow.md)
+- [Provider Requirement Model](./provider-requirement-model.md)
+- [App Composition Guide](./app-composition-guide.md)
+- [How to debug startup provider failure](./how-to-debug-startup-provider-failure.md)
 
 ## `apps/`
 
