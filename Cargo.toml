@@ -26,6 +26,8 @@ members = [
   "crates/ffi/c-bindings",
   "crates/plugins/api",
   "crates/plugins/loader",
+  "tests/integration",
+  "tests/plugin_contract",
 ]
 
 [workspace.package]

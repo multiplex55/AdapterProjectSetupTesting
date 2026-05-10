@@ -29,7 +29,7 @@ This document defines the allowed crate dependency graph.
 
 - Workspace default lints deny `unsafe_code` and `clippy::undocumented_unsafe_blocks`.
 - FFI and selected adapter crates explicitly opt into `unsafe_code` where necessary.
-- CI runs workspace checks and Windows-slice build placeholders.
+- CI runs workspace checks, Windows-slice build placeholders, and host-only vertical-slice integration/contract tests (`integration-tests`, `plugin-contract-tests`).
 
 
 ## Current concrete crates

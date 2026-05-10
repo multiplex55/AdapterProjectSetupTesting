@@ -127,6 +127,16 @@ name = "ffi-target-bindings"
 version = "0.1.0"
 
 [[package]]
+name = "integration-tests"
+version = "0.1.0"
+dependencies = [
+ "adapter-windows-sim",
+ "messages",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -145,6 +155,13 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "plugin-contract-tests"
+version = "0.1.0"
+dependencies = [
+ "plugins-loader",
 ]
 
 [[package]]
