@@ -156,3 +156,7 @@ Cross-layer payload contracts **must live in `crates/messages`**. If multiple la
 ### Typical changes
 - Add an integration test for end-to-end message flow.
 - Add policy tests to assert architectural guardrails.
+
+## Adapter naming audit note
+
+The previously ambiguous adapter crates `crates/adapters/windows-target5` and `crates/adapters/windows-target10` were removed as redundant skeletons. Real target composition now uses `adapter-target5`/`adapter-target10`, and Windows simulation composition uses `adapter-windows-sim` + `adapter-ethernet` in app-level wiring.

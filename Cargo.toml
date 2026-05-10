@@ -11,8 +11,6 @@ members = [
   "crates/ports",
   "crates/messages",
   "crates/runtime",
-  "crates/adapters/windows-target5",
-  "crates/adapters/windows-target10",
   "crates/adapters/sim-transport",
   "crates/adapters/windows-sim",
   "crates/adapters/ethernet",
