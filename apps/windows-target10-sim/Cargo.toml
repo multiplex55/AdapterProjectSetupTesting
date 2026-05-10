@@ -1,0 +1,12 @@
+[package]
+name = "windows-target10-sim"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+runtime = { path = "../../crates/runtime" }
+adapter-sim-transport = { path = "../../crates/adapters/sim-transport" }

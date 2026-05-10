@@ -1,0 +1,12 @@
+[package]
+name = "plugins-loader"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+plugins-api = { path = "../api" }
+messages = { path = "../../messages" }

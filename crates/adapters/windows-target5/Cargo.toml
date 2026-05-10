@@ -1,0 +1,13 @@
+[package]
+name = "adapter-windows-target5"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ports = { path = "../../ports" }
+messages = { path = "../../messages" }
+ffi-c-bindings = { path = "../../ffi/c-bindings", optional = true }
