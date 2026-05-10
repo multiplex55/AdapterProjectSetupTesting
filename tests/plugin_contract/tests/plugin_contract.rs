@@ -21,6 +21,7 @@ fn required_plugin_mismatch_is_detectable() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let err = load_plugin(&req).expect_err("abi mismatch expected");
     assert_eq!(err.plugin_path_attempted, path);
@@ -35,6 +36,7 @@ fn optional_plugin_fallback_is_detectable() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: false,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
 
     let outcome = load_plugin(&req).expect("fallback should be non-fatal");

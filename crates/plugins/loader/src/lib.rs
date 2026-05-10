@@ -13,7 +13,6 @@ pub enum Capability {
     Transport,
     Clock,
 }
-
 impl Capability {
     pub fn as_abi_id(self) -> u32 {
         match self {
@@ -22,6 +21,12 @@ impl Capability {
             Self::Clock => CAPABILITY_CLOCK,
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LoadStrategy {
+    Simulated,
+    Dynamic,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -39,40 +44,35 @@ pub enum LoadErrorKind {
         expected: Capability,
         found_capability_id: u32,
     },
+    LibraryOpenFailed {
+        reason: String,
+    },
     InvokeFailed {
         code: i32,
     },
 }
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LoadError {
     pub plugin_path_attempted: PathBuf,
     pub reason: LoadErrorKind,
 }
-
 #[derive(Debug, Clone)]
 pub struct LoadedPlugin {
     pub path: PathBuf,
     pub descriptor: PluginDescriptorV1,
     pub function_table: PluginFunctionTableV1,
 }
-
 #[derive(Debug, Clone)]
 pub struct PluginLoadRequest {
     pub path: PathBuf,
     pub expected_capability: Capability,
     pub required: bool,
+    pub strategy: LoadStrategy,
 }
-
 #[derive(Debug, Clone)]
 pub enum LoadOutcome {
     Loaded(LoadedPlugin),
     OptionalMissing { attempted_path: PathBuf },
-}
-
-pub trait PluginLibrary {
-    fn descriptor(&self) -> Option<PluginDescriptorV1>;
-    fn function_table(&self) -> Option<PluginFunctionTableV1>;
 }
 
 pub fn platform_library_extension() -> &'static str {
@@ -95,24 +95,25 @@ pub fn load_plugin(request: &PluginLoadRequest) -> Result<LoadOutcome, LoadError
             attempted_path: request.path.clone(),
         });
     }
-
-    let expected_ext = platform_library_extension();
-    if request.path.extension().and_then(|e| e.to_str()) != Some(expected_ext) {
+    if request.path.extension().and_then(|e| e.to_str()) != Some(platform_library_extension()) {
         return Err(LoadError {
             plugin_path_attempted: request.path.clone(),
             reason: LoadErrorKind::UnsupportedExtension,
         });
     }
 
-    let lib = simulated_open(&request.path);
-    let descriptor = lib.descriptor().ok_or_else(|| LoadError {
+    let (descriptor, table) = match request.strategy {
+        LoadStrategy::Simulated => simulated::open(&request.path),
+        LoadStrategy::Dynamic => dynamic::open(&request.path)?,
+    };
+
+    let descriptor = descriptor.ok_or_else(|| LoadError {
         plugin_path_attempted: request.path.clone(),
         reason: LoadErrorKind::MissingRequiredSymbol {
             symbol: SYMBOL_PLUGIN_DESCRIPTOR_V1,
         },
     })?;
-
-    let table = lib.function_table().ok_or_else(|| LoadError {
+    let table = table.ok_or_else(|| LoadError {
         plugin_path_attempted: request.path.clone(),
         reason: LoadErrorKind::MissingRequiredSymbol {
             symbol: SYMBOL_PLUGIN_FN_TABLE_V1,
@@ -147,7 +148,6 @@ fn validate_abi(path: &Path, found: AbiVersion) -> Result<(), LoadError> {
         reason: LoadErrorKind::AbiMismatch { expected, found },
     })
 }
-
 fn validate_capability(path: &Path, expected: Capability, found_id: u32) -> Result<(), LoadError> {
     if expected.as_abi_id() == found_id {
         return Ok(());
@@ -165,12 +165,10 @@ fn validate_capability(path: &Path, expected: Capability, found_id: u32) -> Resu
 pub struct AbiProviderAdapter {
     function_table: PluginFunctionTableV1,
 }
-
 impl AbiProviderAdapter {
     pub fn new(function_table: PluginFunctionTableV1) -> Self {
         Self { function_table }
     }
-
     pub fn invoke(
         &self,
         request_kind: u32,
@@ -187,48 +185,48 @@ impl AbiProviderAdapter {
         );
         match code {
             STATUS_OK => Ok(()),
-            STATUS_ERR_INVALID_INPUT => Err(LoadErrorKind::InvokeFailed { code }),
-            STATUS_ERR_NOT_SUPPORTED => Err(LoadErrorKind::InvokeFailed { code }),
-            STATUS_ERR_INTERNAL => Err(LoadErrorKind::InvokeFailed { code }),
-            STATUS_ERR_ABI_MISMATCH => Err(LoadErrorKind::InvokeFailed { code }),
+            STATUS_ERR_INVALID_INPUT
+            | STATUS_ERR_NOT_SUPPORTED
+            | STATUS_ERR_INTERNAL
+            | STATUS_ERR_ABI_MISMATCH => Err(LoadErrorKind::InvokeFailed { code }),
             _ => Err(LoadErrorKind::InvokeFailed { code }),
         }
     }
 }
 
-#[derive(Debug, Clone)]
-struct SimulatedLibrary {
-    descriptor: Option<PluginDescriptorV1>,
-    table: Option<PluginFunctionTableV1>,
+mod dynamic {
+    use super::*;
+
+    pub(super) fn open(
+        path: &Path,
+    ) -> Result<(Option<PluginDescriptorV1>, Option<PluginFunctionTableV1>), LoadError> {
+        Err(LoadError {
+            plugin_path_attempted: path.to_path_buf(),
+            reason: LoadErrorKind::LibraryOpenFailed {
+                reason: "dynamic loading backend unavailable in this build".to_string(),
+            },
+        })
+    }
 }
 
-impl PluginLibrary for SimulatedLibrary {
-    fn descriptor(&self) -> Option<PluginDescriptorV1> {
-        self.descriptor
-    }
-    fn function_table(&self) -> Option<PluginFunctionTableV1> {
-        self.table
-    }
-}
-
-fn simulated_open(path: &Path) -> SimulatedLibrary {
-    let name = path
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or_default();
-    let bad_abi = name.contains("abi2");
-    let missing_descriptor = name.contains("missing-desc");
-    let missing_table = name.contains("missing-table");
-    let capability = if name.contains("transport") {
-        CAPABILITY_TRANSPORT
-    } else if name.contains("clock") {
-        CAPABILITY_CLOCK
-    } else {
-        CAPABILITY_COMPUTE
-    };
-
-    SimulatedLibrary {
-        descriptor: (!missing_descriptor).then_some(PluginDescriptorV1 {
+mod simulated {
+    use super::*;
+    pub(super) fn open(path: &Path) -> (Option<PluginDescriptorV1>, Option<PluginFunctionTableV1>) {
+        let name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or_default();
+        let bad_abi = name.contains("abi2");
+        let missing_descriptor = name.contains("missing-desc");
+        let missing_table = name.contains("missing-table");
+        let capability = if name.contains("transport") {
+            CAPABILITY_TRANSPORT
+        } else if name.contains("clock") {
+            CAPABILITY_CLOCK
+        } else {
+            CAPABILITY_COMPUTE
+        };
+        let descriptor = (!missing_descriptor).then_some(PluginDescriptorV1 {
             abi: AbiVersion {
                 major: if bad_abi { 2 } else { PLUGIN_ABI_VERSION_MAJOR },
                 minor: PLUGIN_ABI_VERSION_MINOR,
@@ -236,21 +234,96 @@ fn simulated_open(path: &Path) -> SimulatedLibrary {
             },
             capability_id: capability,
             flags: 0,
-        }),
-        table: (!missing_table).then_some(PluginFunctionTableV1 {
+        });
+        let table = (!missing_table).then_some(PluginFunctionTableV1 {
             context: core::ptr::null_mut(),
             invoke: noop_invoke,
-        }),
+        });
+        (descriptor, table)
+    }
+    extern "C" fn noop_invoke(
+        _context: *mut core::ffi::c_void,
+        _request_kind: u32,
+        _payload_ptr: *const u8,
+        _payload_len: usize,
+        _out_ptr: *mut u8,
+        _out_len: usize,
+    ) -> i32 {
+        STATUS_OK
     }
 }
 
-extern "C" fn noop_invoke(
-    _context: *mut core::ffi::c_void,
-    _request_kind: u32,
-    _payload_ptr: *const u8,
-    _payload_len: usize,
-    _out_ptr: *mut u8,
-    _out_len: usize,
-) -> i32 {
-    STATUS_OK
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    fn touch(name: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join("plugin-loader-unit-tests");
+        fs::create_dir_all(&dir).expect("temp dir");
+        let path = dir.join(name);
+        fs::write(&path, b"stub").expect("write");
+        path
+    }
+
+    #[test]
+    fn simulated_symbol_lookup_missing_descriptor() {
+        let path = touch(&format!(
+            "compute-missing-desc.{}",
+            platform_library_extension()
+        ));
+        let req = PluginLoadRequest {
+            path,
+            expected_capability: Capability::Compute,
+            required: true,
+            strategy: LoadStrategy::Simulated,
+        };
+        let err = load_plugin(&req).expect_err("expected missing descriptor");
+        assert!(
+            matches!(err.reason, LoadErrorKind::MissingRequiredSymbol { symbol } if symbol == SYMBOL_PLUGIN_DESCRIPTOR_V1)
+        );
+    }
+
+    #[test]
+    fn capability_contract_pass_and_fail() {
+        let pass_path = touch(&format!("transport-valid.{}", platform_library_extension()));
+        let pass_req = PluginLoadRequest {
+            path: pass_path,
+            expected_capability: Capability::Transport,
+            required: true,
+            strategy: LoadStrategy::Simulated,
+        };
+        assert!(matches!(load_plugin(&pass_req), Ok(LoadOutcome::Loaded(_))));
+
+        let fail_path = touch(&format!("compute-valid.{}", platform_library_extension()));
+        let fail_req = PluginLoadRequest {
+            path: fail_path,
+            expected_capability: Capability::Clock,
+            required: true,
+            strategy: LoadStrategy::Simulated,
+        };
+        let err = load_plugin(&fail_req).expect_err("expected capability mismatch");
+        assert!(
+            matches!(err.reason, LoadErrorKind::CapabilityMismatch { expected: Capability::Clock, found_capability_id } if found_capability_id == CAPABILITY_COMPUTE)
+        );
+    }
+
+    #[test]
+    fn dynamic_loader_open_failure_is_typed() {
+        let path = touch(&format!(
+            "not-a-real-library.{}",
+            platform_library_extension()
+        ));
+        let req = PluginLoadRequest {
+            path,
+            expected_capability: Capability::Compute,
+            required: true,
+            strategy: LoadStrategy::Dynamic,
+        };
+        let err = load_plugin(&req).expect_err("expected open failure");
+        assert!(matches!(
+            err.reason,
+            LoadErrorKind::LibraryOpenFailed { .. }
+        ));
+    }
 }

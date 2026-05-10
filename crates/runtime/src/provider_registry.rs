@@ -1,6 +1,9 @@
 use std::{collections::BTreeMap, path::PathBuf};
 
-use plugins_loader::{load_plugin, Capability as PluginCapability, LoadOutcome, PluginLoadRequest};
+use plugins_loader::{
+    load_plugin, Capability as PluginCapability, LoadOutcome, LoadStrategy as PluginLoadStrategy,
+    PluginLoadRequest,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CapabilityKind {
@@ -117,6 +120,7 @@ impl ProviderRegistry {
                     path: path.clone(),
                     expected_capability: capability.as_plugin_capability(),
                     required,
+                    strategy: PluginLoadStrategy::Dynamic,
                 };
                 match load_plugin(&req) {
                     Ok(LoadOutcome::Loaded(loaded)) => Ok(loaded.path.display().to_string()),
