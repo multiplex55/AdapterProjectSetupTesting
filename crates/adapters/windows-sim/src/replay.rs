@@ -13,6 +13,10 @@ pub enum ReplayParseError {
     InvalidFormat,
     InvalidSequence,
     InvalidPayload,
+    InvalidJson { message: String },
+    UnknownEventKind { kind: String },
+    MissingRequiredField { kind: String, message: String },
+    InvalidEventOrder { previous_timestamp_ms: u64, current_timestamp_ms: u64 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -56,6 +60,9 @@ pub struct DeterministicReplay {
 }
 
 impl DeterministicReplay {
+    /// Lightweight non-canonical parser retained for backwards compatibility.
+    ///
+    /// Canonical replay scenarios are JSON and should be parsed via `scenario::ReplayScenario::parse_json`.
     pub fn from_lines<I>(lines: I) -> Result<Self, ReplayParseError>
     where
         I: IntoIterator,

@@ -1,0 +1,9 @@
+{
+  "events": [
+    {
+      "timestamp_ms": 1000,
+      "kind": "target5_status_typo",
+      "payload": { "device_id": 5, "online": true, "sequence": 1 }
+    }
+  ]
+}
