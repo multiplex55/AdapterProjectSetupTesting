@@ -4,12 +4,45 @@ This guide defines the required layering and safety standards for integrating ne
 
 ## Required crate layering
 
-1. Add or update **raw bindings** only in `crates/ffi/target-bindings`.
-   - Keep this crate ABI-focused: C-compatible types, extern declarations, and no domain logic.
+1. Add or update **generated raw bindings** only in `crates/ffi/target-bindings`.
+   - This crate is ABI-focused: generated C-compatible types, constants, and `extern` declarations.
 2. Add **safe wrappers** only in `crates/adapters/c-drivers`.
    - This crate owns pointer/buffer validation, error translation, and safe APIs consumed by upper layers.
 3. Do not skip layers.
    - `crates/core` and other domain-facing crates must use adapter interfaces, never raw FFI symbols.
+4. Raw C structs must not become core domain models.
+   - Core/domain types are Rust semantic models in message/core crates, mapped from adapter wrapper outputs.
+
+## Bindgen workflow
+
+Use this workflow whenever C headers change.
+
+### Binding generation location rules
+
+- Generated bindgen output stays in: `crates/ffi/target-bindings`.
+- Handwritten safe wrappers stay in: `crates/adapters/c-drivers`.
+- Do not copy bindgen-generated raw structs/enums into `core` or message-domain modules.
+
+### Typical regeneration flow
+
+1. Update or add vendor C headers used by bindings.
+2. Regenerate bindgen outputs inside `crates/ffi/target-bindings`.
+3. Review generated diff for ABI-impacting changes.
+4. Update safe wrapper mappings in `crates/adapters/c-drivers`.
+5. Re-run adapter tests and workspace checks.
+
+### Regeneration/update hygiene tips
+
+- Keep generated files clearly separated from handwritten code inside `crates/ffi/target-bindings`.
+- Review points for bindgen diffs:
+  - integer width/signedness changes
+  - struct layout/packing/alignment changes
+  - pointer constness changes
+  - added/removed enum variants and constants
+- Wrapper validation steps after regeneration:
+  - verify null/length/pointer checks still match new signatures
+  - verify raw status/error code mapping remains complete
+  - verify no new raw types leak through public safe wrapper APIs
 
 ## Unsafe policy
 
@@ -57,9 +90,10 @@ When adding a new C wrapper, include tests in `crates/adapters/c-drivers` that c
 
 ## Suggested implementation checklist
 
-- [ ] Add/extend ABI declarations in `crates/ffi/target-bindings` only.
+- [ ] Regenerate/update ABI declarations in `crates/ffi/target-bindings` only.
 - [ ] Implement/extend safe wrapper in `crates/adapters/c-drivers`.
+- [ ] Confirm raw C structs are mapped into semantic Rust types before crossing into domain/core.
 - [ ] Add `SAFETY:` comments for each unsafe block.
 - [ ] Add unit tests for error translation and boundary checks.
 - [ ] Add mock-based adapter tests that run in host CI without hardware.
-- [ ] Run `cargo check --workspace` and relevant tests before merging.
+- [ ] Run `cargo metadata` and `cargo check --workspace` before merging.
