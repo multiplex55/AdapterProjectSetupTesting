@@ -1,0 +1,12 @@
+[package]
+name = "target10-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+runtime = { path = "../../crates/runtime" }
+adapter-windows-target10 = { path = "../../crates/adapters/windows-target10" }

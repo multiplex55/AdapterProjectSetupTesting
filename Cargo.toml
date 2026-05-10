@@ -1,0 +1,39 @@
+[workspace]
+resolver = "2"
+members = [
+  "apps/target5-app",
+  "apps/target10-app",
+  "apps/windows-target5-sim",
+  "apps/windows-target10-sim",
+  "apps/tools/dep-audit",
+  "apps/tools/scenario-runner",
+  "crates/core",
+  "crates/ports",
+  "crates/messages",
+  "crates/runtime",
+  "crates/adapters/windows-target5",
+  "crates/adapters/windows-target10",
+  "crates/adapters/sim-transport",
+  "crates/ffi/c-bindings",
+  "crates/plugins/api",
+  "crates/plugins/loader",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"
+
+[profile.dev]
+debug = 1
+incremental = true
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

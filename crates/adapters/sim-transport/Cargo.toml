@@ -1,0 +1,12 @@
+[package]
+name = "adapter-sim-transport"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+ports = { path = "../../ports" }
+messages = { path = "../../messages" }

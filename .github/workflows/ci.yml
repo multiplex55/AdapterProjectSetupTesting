@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify-workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cargo metadata
+        run: cargo metadata --no-deps
+      - name: Check workspace skeletons
+        run: cargo check --workspace
+
+  windows-slice-placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build windows slice crates (host skeleton)
+        run: |
+          cargo check -p windows-target5-sim
+          cargo check -p windows-target10-sim
+          cargo check -p adapter-windows-target5
+          cargo check -p adapter-windows-target10
