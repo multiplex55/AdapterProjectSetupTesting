@@ -14,6 +14,8 @@ members = [
   "crates/adapters/windows-target5",
   "crates/adapters/windows-target10",
   "crates/adapters/sim-transport",
+  "crates/adapters/windows-sim",
+  "crates/adapters/ethernet",
   "crates/ffi/c-bindings",
   "crates/plugins/api",
   "crates/plugins/loader",

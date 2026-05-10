@@ -50,7 +50,9 @@ fn missing_optional_plugin_falls_back() {
         required: false,
     };
     let outcome = load_plugin(&req).expect("optional missing should not fail");
-    assert!(matches!(outcome, LoadOutcome::OptionalMissing { attempted_path } if attempted_path == path));
+    assert!(
+        matches!(outcome, LoadOutcome::OptionalMissing { attempted_path } if attempted_path == path)
+    );
 }
 
 #[test]

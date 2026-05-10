@@ -1,6 +1,4 @@
-use crate::common::{
-    MAX_SUPPORTED_PROTOCOL_VERSION, MIN_SUPPORTED_PROTOCOL_VERSION, MessageType,
-};
+use crate::common::{MessageType, MAX_SUPPORTED_PROTOCOL_VERSION, MIN_SUPPORTED_PROTOCOL_VERSION};
 use crate::ethernet::EthernetEnvelope;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
