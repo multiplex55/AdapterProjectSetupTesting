@@ -210,6 +210,12 @@ dependencies = [
 [[package]]
 name = "scenario-runner"
 version = "0.1.0"
+dependencies = [
+ "core",
+ "messages",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "serde"
