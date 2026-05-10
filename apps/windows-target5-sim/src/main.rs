@@ -4,7 +4,8 @@ use adapter_windows_sim::replay::ReplayEvent;
 use adapter_windows_sim::scenario::ReplayScenario;
 use core_crate::algorithms::target5_to_target10::map_target5_status_to_target10_command;
 use runtime::{
-    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry, StartupConfig,
+    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry,
+    ProviderSourceSpec, StartupConfig,
 };
 
 fn parse_args() -> (&'static str, Option<String>) {
@@ -41,6 +42,7 @@ fn main() {
         ProviderCandidate {
             path: "adapter://windows-sim-target5".to_string(),
             abi: 1,
+            source: ProviderSourceSpec::Adapter,
         },
     );
     explicit_providers.insert(
@@ -48,6 +50,7 @@ fn main() {
         ProviderCandidate {
             path: format!("adapter://ethernet?input={input_mode}"),
             abi: 1,
+            source: ProviderSourceSpec::Adapter,
         },
     );
 

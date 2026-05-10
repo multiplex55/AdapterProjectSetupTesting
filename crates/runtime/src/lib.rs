@@ -13,5 +13,6 @@ pub use diagnostics::{FallbackStatus, StartupDiagnostics};
 pub use health::{HealthReport, HealthState};
 pub use provider_registry::{
     CapabilityKind, ProviderCandidate, ProviderError, ProviderRegistry, ProviderResolution,
+    ProviderSourceSpec,
 };
 pub use startup::{StartupConfig, StartupError, StartupResult};

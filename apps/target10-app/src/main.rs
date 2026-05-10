@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
 
 use runtime::{
-    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry, StartupConfig,
+    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry,
+    ProviderSourceSpec, StartupConfig,
 };
 
 fn main() {
@@ -11,6 +12,7 @@ fn main() {
         ProviderCandidate {
             path: "adapter://target10".to_string(),
             abi: 1,
+            source: ProviderSourceSpec::Adapter,
         },
     );
     explicit_providers.insert(
@@ -18,6 +20,7 @@ fn main() {
         ProviderCandidate {
             path: "adapter://ethernet+commtype1+commtype2".to_string(),
             abi: 1,
+            source: ProviderSourceSpec::Adapter,
         },
     );
 
