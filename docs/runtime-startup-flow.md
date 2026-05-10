@@ -47,3 +47,6 @@ startup request
 - [Provider requirement model](./provider-requirement-model.md)
 - [App composition guide](./app-composition-guide.md)
 - [How to debug startup provider failure](./how-to-debug-startup-provider-failure.md)
+- [Replay scenario format](./replay-scenario-format.md)
+- [How to add replay scenario](./how-to-add-replay-scenario.md)
+
