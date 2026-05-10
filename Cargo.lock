@@ -3,11 +3,32 @@
 version = 4
 
 [[package]]
+name = "adapter-ethernet"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+ "pretty_assertions",
+ "serde_json",
+]
+
+[[package]]
 name = "adapter-sim-transport"
 version = "0.1.0"
 dependencies = [
  "messages",
  "ports",
+]
+
+[[package]]
+name = "adapter-windows-sim"
+version = "0.1.0"
+dependencies = [
+ "messages",
+ "ports",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
