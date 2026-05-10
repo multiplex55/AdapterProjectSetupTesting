@@ -1,0 +1,14 @@
+[package]
+name = "ffi-c-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "allow"
+
+[dependencies]
+ffi-target-bindings = { path = "../target-bindings" }
