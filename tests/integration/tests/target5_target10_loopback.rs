@@ -1,38 +1,26 @@
 use adapter_windows_sim::replay::{DeterministicReplay, ReplayEvent};
-use messages::{Target10Command, Target5Status};
-
-fn map_status_to_command(status: &Target5Status) -> Target10Command {
-    if status.online {
-        Target10Command {
-            command_id: 1000 + status.device_id,
-            action: "arm".to_string(),
-            priority: 1,
-        }
-    } else {
-        Target10Command {
-            command_id: 2000 + status.device_id,
-            action: "standby".to_string(),
-            priority: 5,
-        }
-    }
-}
+use core_crate::algorithms::target5_to_target10::map_target5_status_to_target10_command;
+use messages::Target10Command;
 
 #[test]
 fn windows_target5_to_target10_loopback_message_exchange() {
     let statuses = [
-        Target5Status {
+        messages::Target5Status {
             device_id: 5,
             online: true,
             sequence: 1,
         },
-        Target5Status {
+        messages::Target5Status {
             device_id: 10,
             online: false,
             sequence: 2,
         },
     ];
 
-    let commands: Vec<_> = statuses.iter().map(map_status_to_command).collect();
+    let commands: Vec<_> = statuses
+        .iter()
+        .map(|status| map_target5_status_to_target10_command(status).expect("valid mapped command"))
+        .collect();
 
     assert_eq!(commands[0].action, "arm");
     assert_eq!(commands[0].command_id, 1005);
@@ -50,7 +38,9 @@ fn replay_driven_output_is_deterministic() {
     let replay = DeterministicReplay::from_lines(lines).expect("valid replay");
     let output: Vec<_> = replay
         .filter_map(|event| match event {
-            ReplayEvent::Target5Status(status) => Some(map_status_to_command(&status)),
+            ReplayEvent::Target5Status(status) => {
+                Some(map_target5_status_to_target10_command(&status).expect("valid mapped command"))
+            }
             ReplayEvent::Target10Command(_) => None,
         })
         .collect();

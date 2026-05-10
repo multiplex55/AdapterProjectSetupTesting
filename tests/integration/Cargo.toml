@@ -9,6 +9,7 @@ publish = false
 workspace = true
 
 [dependencies]
+core-crate = { package = "core", path = "../../crates/core" }
 messages = { path = "../../crates/messages" }
 adapter-windows-sim = { path = "../../crates/adapters/windows-sim" }
 serde = { version = "1", features = ["derive"] }
