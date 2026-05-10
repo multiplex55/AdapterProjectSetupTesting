@@ -1,4 +1,6 @@
 use crate::domain::{CoreError, InputFrame, OutputFrame};
+
+pub mod target5_to_target10;
 use ports::AlgorithmProvider;
 
 pub fn process_frame_with_provider<P>(
