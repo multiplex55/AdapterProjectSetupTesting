@@ -19,6 +19,11 @@ The workspace is intentionally split into architectural layers so contributors c
 
 Authoritative dependency rules are documented in `docs/dependency-rules.md`.
 
+## Architecture constraints
+
+- Dependency and layering constraints: `docs/dependency-rules.md`
+- Architecture decision log policy (one ADR per significant tradeoff): `docs/adr/`
+
 ## Why `core` is platform-agnostic
 
 `crates/core` represents domain intent and policy, so it must not embed platform concerns (OS, transport, simulator, FFI ABI, plugin loading strategy). This keeps domain behavior:
@@ -38,7 +43,9 @@ Rule of thumb:
 - **Boundary crates:** choose platform wiring with `cfg`.
 - **Shared crates (`messages`, `ports`, `core`):** keep logic deterministic and platform-neutral.
 
-## Build/run instructions for Windows simulators
+## Current State
+
+### Implemented paths (runnable now)
 
 From repository root:
 
@@ -48,34 +55,32 @@ cargo metadata --format-version 1 > /tmp/metadata.json
 
 # Validate currently buildable host slices
 cargo check --workspace
+
+# Run the scenario runner utility
+cargo run -p scenario-runner -- --help
+
+# Run simulator app entrypoints
+cargo run -p windows-target5-sim -- --help
+cargo run -p windows-target10-sim -- --help
+
+# Run app entrypoints
+cargo run -p target5-app -- --help
+cargo run -p target10-app -- --help
 ```
 
-Run simulator scenarios (example commands; see scenario READMEs for exact binaries/options):
+### Scaffold/planned paths (not yet runnable)
+
+Use the following only as planned interface examples:
 
 ```bash
-# Target5 simulator scenario
-cargo run -p target5_sim -- --scenario scenarios/target5
+# Planned: scenario-specific CLI surfaces and options are still evolving.
+# Planned: cargo run -p windows-target5-sim -- --scenario scenarios/target5
+# Planned: cargo run -p windows-target10-sim -- --scenario scenarios/target10
 
-# Target10 simulator scenario
-cargo run -p target10_sim -- --scenario scenarios/target10
+# Planned: deterministic replay CLI contract is not finalized in scenario-runner.
+# Planned: cargo run -p scenario-runner -- --input ./replays/sample.json --target target5
+# Planned: cargo run -p scenario-runner -- --input ./replays/sample.json --target target10
 ```
-
-If a simulator binary is not yet implemented, treat the command as planned interface and use scenario README guidance under `scenarios/target5/` and `scenarios/target10/`.
-
-## Replay usage examples
-
-Replay is used to feed deterministic recorded inputs through runtime wiring.
-
-```bash
-# Generic replay pattern (example)
-cargo run -p replay_tool -- --input ./replays/sample.json --target target5
-
-# Compare same replay across targets
-cargo run -p replay_tool -- --input ./replays/sample.json --target target5
-cargo run -p replay_tool -- --input ./replays/sample.json --target target10
-```
-
-Expected use: verify message contracts and fallback behavior remain stable across adapters.
 
 ## Provider fallback behavior
 
@@ -101,26 +106,21 @@ Target5 and Target10 share domain contracts (`messages`, `ports`, `core`) and di
 
 Principle: Target-to-target communication is mediated through runtime/message contracts, not direct adapter coupling.
 
-## Architecture decision log (ADR)
-
-Future tradeoff records belong in `docs/adr/`. Create one ADR per significant architecture decision (dependency edge, fallback policy, simulator contract, unsafe boundary change).
-
 ## Explicit "not implemented yet"
 
 The following are intentionally incomplete and should be treated as roadmap items:
 
-- Final simulator binary names/options may still change.
-- Replay tool package name and CLI schema may still change.
+- Final simulator command options may still change.
 - Full provider catalog and fallback priority configuration are not finalized.
 - Cross-target conformance suite coverage is partial.
 
 Use this repository as an architecture scaffold first; feature completeness is secondary at this stage.
 
-## Contributor quick-start
+## Contributor verification checklist
 
-1. Read `docs/dependency-rules.md` before adding dependencies.
-2. Keep `core` pure and platform-agnostic; add ports/messages instead of cross-layer imports.
-3. Run `cargo metadata` and `cargo check --workspace` after architecture changes.
-4. Document non-trivial tradeoffs in `docs/adr/`.
+- [ ] Run `cargo metadata --format-version 1`
+- [ ] Run `cargo check --workspace`
+- [ ] Keep `README.md` package command examples aligned to actual workspace package names.
+- [ ] Document non-trivial architecture tradeoffs in `docs/adr/`.
 
 See also `docs/testing-scope.md` for host vs target-only expectations.
