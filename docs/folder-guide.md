@@ -32,6 +32,10 @@ This guide describes what belongs in each major workspace directory and what mus
 - Add CLI flags and startup wiring to a specific app.
 - Add a new composition binary for a new deployment profile.
 
+### Target app dependency policy
+- Target app `Cargo.toml` dependencies should reflect intended runtime composition, even when some adapters are placeholders.
+- See [App Composition Guide](./app-composition-guide.md#dependency-declaration-policy-for-target-apps).
+
 ## `crates/core`
 
 ### Responsibilities

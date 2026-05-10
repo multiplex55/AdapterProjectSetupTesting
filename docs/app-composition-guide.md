@@ -28,6 +28,17 @@ Referenced examples:
 
 Windows simulation apps currently demonstrate this split: they perform startup composition and orchestration, while domain mapping logic is consumed from core crate APIs.
 
+
+## Dependency declaration policy for target apps
+
+Target app `Cargo.toml` dependencies should mirror the intended runtime composition, even when some adapter crates are placeholder implementations. This keeps composition intent explicit, prevents drift between profile design and binary wiring, and makes future adapter activation a dependency-only change instead of a hidden architectural change.
+
+In practice:
+
+- include all adapters expected by the target runtime topology;
+- keep intentionally-unused placeholders documented in app composition docs and startup diagnostics;
+- avoid implicit dependency activation paths that bypass app-level composition clarity.
+
 ## Practical checklist for new app mains
 
 - Select an existing runtime `ProfileId` (or add one in runtime with docs updates).

@@ -275,6 +275,9 @@ dependencies = [
 name = "target10-app"
 version = "0.1.0"
 dependencies = [
+ "adapter-commtype1",
+ "adapter-commtype2",
+ "adapter-ethernet",
  "adapter-target10",
  "runtime",
 ]
@@ -283,6 +286,7 @@ dependencies = [
 name = "target5-app"
 version = "0.1.0"
 dependencies = [
+ "adapter-ethernet",
  "adapter-target5",
  "runtime",
 ]
