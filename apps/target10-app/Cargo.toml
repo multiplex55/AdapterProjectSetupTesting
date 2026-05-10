@@ -9,4 +9,4 @@ workspace = true
 
 [dependencies]
 runtime = { path = "../../crates/runtime" }
-adapter-windows-target10 = { path = "../../crates/adapters/windows-target10" }
+adapter-target10 = { path = "../../crates/adapters/target10" }

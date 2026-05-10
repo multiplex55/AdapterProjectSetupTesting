@@ -9,4 +9,5 @@ workspace = true
 
 [dependencies]
 runtime = { path = "../../crates/runtime" }
-adapter-sim-transport = { path = "../../crates/adapters/sim-transport" }
+adapter-windows-sim = { path = "../../crates/adapters/windows-sim" }
+adapter-ethernet = { path = "../../crates/adapters/ethernet" }

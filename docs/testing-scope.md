@@ -5,7 +5,7 @@
 Use these commands for host-executable slices (`core`, `ports`, `messages`, `runtime`, Windows simulators, and related adapters):
 
 - `cargo fmt --all --check`
-- `cargo clippy -p core -p ports -p messages -p runtime -p adapter-windows-target5 -p adapter-windows-target10 -p adapter-windows-sim -p adapter-sim-transport -p adapter-target5 -p adapter-target10 --all-targets -- -D warnings`
+- `cargo clippy -p core -p ports -p messages -p runtime -p adapter-windows-sim -p adapter-sim-transport -p adapter-target5 -p adapter-target10 --all-targets -- -D warnings`
 - `cargo test -p integration-tests -p plugin-contract-tests -p adapter-windows-sim -p plugins-loader`
 - `cargo metadata --format-version 1 > /dev/null`
 - `cargo check --workspace`

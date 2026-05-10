@@ -23,7 +23,7 @@ This document defines the allowed crate dependency graph.
 - `messages` -> any internal crate
 - `ports` -> `core`, `runtime`, `adapters/*`, `plugins/*`, `ffi/*`
 
-- Adapter implementations in-tree include `adapters/windows-target5`, `adapters/windows-target10`, `adapters/windows-sim`, and `adapters/ethernet`; all stay within the `adapters/*` edge policy.
+- Adapter implementations in-tree include `adapters/target5`, `adapters/target10`, `adapters/windows-sim`, and `adapters/ethernet`; Windows-specific simulation composition lives in `apps/windows-target*-sim`.
 
 ## Enforcement
 
@@ -34,5 +34,5 @@ This document defines the allowed crate dependency graph.
 
 ## Current concrete crates
 
-- Target adapters: `adapters/target5`, `adapters/target10`, `adapters/commtype1`, `adapters/commtype2`, plus Windows simulation adapters.
+- Target adapters: `adapters/target5`, `adapters/target10`, `adapters/commtype1`, `adapters/commtype2`; simulation adapters: `adapters/windows-sim` and `adapters/ethernet`.
 - C interop: raw declarations in `ffi/target-bindings`; safe wrappers in `adapters/c-drivers`; optional outward C surface in `ffi/c-api`.
