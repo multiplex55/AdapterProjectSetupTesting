@@ -2,6 +2,13 @@
 
 This document explains requirement/fallback semantics across runtime startup and provider resolution.
 
+## Source of truth in code
+
+- Runtime startup orchestration: [`crates/runtime/src/startup.rs`](../crates/runtime/src/startup.rs).
+- Provider source ordering and resolution: [`crates/runtime/src/provider_registry.rs`](../crates/runtime/src/provider_registry.rs).
+- Provider contracts and load errors: [`crates/plugins/api/src/lib.rs`](../crates/plugins/api/src/lib.rs), [`crates/plugins/loader/src/lib.rs`](../crates/plugins/loader/src/lib.rs).
+- Runtime/provider boundary tests: [`tests/integration/tests/target5_target10_loopback.rs`](../tests/integration/tests/target5_target10_loopback.rs), [`tests/plugin_contract/tests/plugin_contract.rs`](../tests/plugin_contract/tests/plugin_contract.rs).
+
 ## Core concepts
 
 1. **Required capability**
@@ -66,3 +73,11 @@ Diagnostics should make fallback decisions observable:
 - [Application profile matrix](./application-profile-matrix.md)
 - [App composition guide](./app-composition-guide.md)
 - [How to debug startup provider failure](./how-to-debug-startup-provider-failure.md)
+
+## Canonical vs compatibility
+
+Provider resolution behavior documented here is canonical for runtime startup sequencing and typed-error semantics. Plugin loading is a staged roadmap (see [Plugin Loading Roadmap](./plugin-loading-roadmap.md)); avoid assuming fully implemented, production-complete dynamic loading across all targets today.
+
+## Boundary guardrail reminder
+
+As defined in [Dependency Rules](./dependency-rules.md), keep platform-specific logic and runtime composition concerns out of `crates/core`. Core remains deterministic and host-buildable, while runtime/adapters/plugins own environment-specific behavior.

@@ -2,6 +2,13 @@
 
 This document describes startup orchestration implemented in [`crates/runtime/src/startup.rs`](../crates/runtime/src/startup.rs).
 
+## Source of truth in code
+
+- Startup orchestration: [`crates/runtime/src/startup.rs`](../crates/runtime/src/startup.rs).
+- Provider resolution ordering and decisions: [`crates/runtime/src/provider_registry.rs`](../crates/runtime/src/provider_registry.rs).
+- App entrypoint wiring examples: [`apps/target5-app/src/main.rs`](../apps/target5-app/src/main.rs), [`apps/windows-target10-sim/src/main.rs`](../apps/windows-target10-sim/src/main.rs).
+- Startup/provider contract tests: [`tests/integration/tests/target5_target10_loopback.rs`](../tests/integration/tests/target5_target10_loopback.rs), [`tests/plugin_contract/tests/plugin_contract.rs`](../tests/plugin_contract/tests/plugin_contract.rs).
+
 ## Startup stages
 
 1. **Config validation**
@@ -50,3 +57,12 @@ startup request
 - [Replay scenario format](./replay-scenario-format.md)
 - [How to add replay scenario](./how-to-add-replay-scenario.md)
 
+
+
+## Canonical vs compatibility
+
+The startup sequence and typed error model in runtime are canonical. Plugin loading behavior is intentionally staged (see [Plugin Loading Roadmap](./plugin-loading-roadmap.md)); this flow should not be read as a claim of fully completed dynamic loader support on every platform slice yet.
+
+## Boundary guardrail reminder
+
+Per [Dependency Rules](./dependency-rules.md), `crates/core` must stay free of platform-specific startup/composition logic. Keep orchestration in runtime and concrete behavior in adapters/plugins.

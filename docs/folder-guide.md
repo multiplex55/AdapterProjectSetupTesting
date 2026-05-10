@@ -16,6 +16,19 @@ This guide describes what belongs in each major workspace directory and what mus
 - [Replay Scenario Format](./replay-scenario-format.md)
 - [How to Add Replay Scenario](./how-to-add-replay-scenario.md)
 
+## Scenario-driven architecture docs
+
+For scenario-driven runtime behavior, use these focused docs:
+
+- [Application Profile Matrix](./application-profile-matrix.md)
+- [Provider Requirement Model](./provider-requirement-model.md)
+- [Runtime Startup Flow](./runtime-startup-flow.md)
+- [Replay Scenario Format](./replay-scenario-format.md)
+- [App Composition Guide](./app-composition-guide.md)
+- [How to Add Replay Scenario](./how-to-add-replay-scenario.md)
+- [How to Add New App Profile](./how-to-add-new-app-profile.md)
+- [How to Add New Port and Adapter](./how-to-add-new-port-and-adapter.md)
+
 ## `apps/`
 
 ### Responsibilities
