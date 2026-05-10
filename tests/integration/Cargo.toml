@@ -1,0 +1,15 @@
+[package]
+name = "integration-tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+messages = { path = "../../crates/messages" }
+adapter-windows-sim = { path = "../../crates/adapters/windows-sim" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

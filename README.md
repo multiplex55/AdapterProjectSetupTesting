@@ -16,3 +16,6 @@ This repository is organized as a Rust workspace with architecture-oriented boun
 - `tests/*`: integration and contract test surfaces.
 
 See `docs/dependency-rules.md` for dependency constraints.
+
+
+See `docs/testing-scope.md` for dev-host vs target-only test expectations and CI commands.

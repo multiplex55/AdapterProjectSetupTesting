@@ -1,6 +1,8 @@
 //! Safe wrappers over raw target C drivers.
 
-use ffi_target_bindings::{c_int, c_uint, target_close, target_open, target_recv, target_send, target_packet_t};
+use ffi_target_bindings::{
+    c_int, c_uint, target_close, target_open, target_packet_t, target_recv, target_send,
+};
 use messages::{Target10Command, Target5Status};
 use ports::{DataSource, DataSourceError, MessagePublisher, TransportError};
 
@@ -39,7 +41,11 @@ impl MessagePublisher for TargetDriver {
     type Message = Target10Command;
 
     fn publish(&self, message: Self::Message) -> Result<(), TransportError> {
-        let mut packet = target_packet_t { id: message.command_id, len: 0, data: [0; 256] };
+        let mut packet = target_packet_t {
+            id: message.command_id,
+            len: 0,
+            data: [0; 256],
+        };
         let bytes = message.action.as_bytes();
         if bytes.len() > packet.data.len() {
             return Err(TransportError::InvalidPayload);
@@ -60,7 +66,11 @@ impl DataSource for TargetDriver {
     type Item = Target5Status;
 
     fn read(&self) -> Result<Self::Item, DataSourceError> {
-        let mut packet = target_packet_t { id: 0, len: 0, data: [0; 256] };
+        let mut packet = target_packet_t {
+            id: 0,
+            len: 0,
+            data: [0; 256],
+        };
         // SAFETY: packet is valid mutable output buffer for call duration.
         let rc = unsafe { target_recv(self.handle, &mut packet as *mut target_packet_t) };
         if rc != 0 {

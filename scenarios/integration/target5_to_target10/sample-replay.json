@@ -1,0 +1,44 @@
+{
+  "scenario": {
+    "id": "vertical-slice-001",
+    "name": "target5-online-to-target10-arm",
+    "description": "First vertical slice: online target5 status emits deterministic arm command."
+  },
+  "profile": {
+    "source": "windows-target5-sim",
+    "target": "windows-target10-sim"
+  },
+  "protocol_version": {
+    "family": "target5-target10-loopback",
+    "major": 1,
+    "minor": 0
+  },
+  "events": [
+    {
+      "timestamp_ms": 1000,
+      "kind": "target5_status",
+      "payload": { "device_id": 5, "online": true, "sequence": 1 }
+    },
+    {
+      "timestamp_ms": 1200,
+      "kind": "target5_status",
+      "payload": { "device_id": 10, "online": false, "sequence": 2 }
+    }
+  ],
+  "expected": {
+    "outputs": [
+      {
+        "kind": "target10_command",
+        "payload": { "command_id": 1005, "action": "arm", "priority": 1 }
+      },
+      {
+        "kind": "target10_command",
+        "payload": { "command_id": 2010, "action": "standby", "priority": 5 }
+      }
+    ],
+    "final_state": {
+      "last_target5_sequence": 2,
+      "commands_emitted": 2
+    }
+  }
+}
