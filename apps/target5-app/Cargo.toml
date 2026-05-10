@@ -10,3 +10,4 @@ workspace = true
 [dependencies]
 runtime = { path = "../../crates/runtime" }
 adapter-target5 = { path = "../../crates/adapters/target5" }
+adapter-ethernet = { path = "../../crates/adapters/ethernet" }
