@@ -68,3 +68,38 @@ fn missing_required_plugin_fails_startup() {
     assert_eq!(err.plugin_path_attempted, path);
     assert!(matches!(err.reason, LoadErrorKind::NotFound));
 }
+
+
+#[test]
+fn missing_descriptor_symbol_fails_with_typed_error() {
+    let ext = platform_library_extension();
+    let path = touch(&format!("compute-missing-desc.{ext}"));
+    let req = PluginLoadRequest {
+        path: path.clone(),
+        expected_capability: Capability::Compute,
+        required: true,
+    };
+    let err = load_plugin(&req).expect_err("missing descriptor symbol should fail");
+    assert_eq!(err.plugin_path_attempted, path);
+    assert!(matches!(
+        err.reason,
+        LoadErrorKind::MissingRequiredSymbol { symbol } if symbol == plugins_api::SYMBOL_PLUGIN_DESCRIPTOR_V1
+    ));
+}
+
+#[test]
+fn missing_function_table_symbol_fails_with_typed_error() {
+    let ext = platform_library_extension();
+    let path = touch(&format!("compute-missing-table.{ext}"));
+    let req = PluginLoadRequest {
+        path: path.clone(),
+        expected_capability: Capability::Compute,
+        required: true,
+    };
+    let err = load_plugin(&req).expect_err("missing function table symbol should fail");
+    assert_eq!(err.plugin_path_attempted, path);
+    assert!(matches!(
+        err.reason,
+        LoadErrorKind::MissingRequiredSymbol { symbol } if symbol == plugins_api::SYMBOL_PLUGIN_FN_TABLE_V1
+    ));
+}

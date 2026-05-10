@@ -129,3 +129,34 @@ impl ProviderRegistry {
         })
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn explicit_provider_wins_selection_order() {
+        let registry = ProviderRegistry::with_defaults();
+        let explicit = ProviderCandidate { path: "plugin://explicit-compute".into(), abi: 1 };
+        let res = registry
+            .resolve(CapabilityKind::Compute, Some(explicit.clone()), 1, true)
+            .expect("explicit provider should resolve");
+        assert_eq!(res.selected, explicit.path);
+        assert_eq!(res.fallback_attempts, vec!["explicit:selected"]);
+    }
+
+    #[test]
+    fn discovered_provider_used_when_no_explicit() {
+        let mut registry = ProviderRegistry::with_defaults();
+        registry.discovered_mut().insert(
+            CapabilityKind::Transport,
+            ProviderCandidate { path: "plugin://discovered-transport".into(), abi: 1 },
+        );
+        let res = registry
+            .resolve(CapabilityKind::Transport, None, 1, true)
+            .expect("discovered provider should resolve");
+        assert_eq!(res.selected, "plugin://discovered-transport");
+        assert_eq!(res.fallback_attempts, vec!["explicit:missing", "discovered:selected"]);
+    }
+}
