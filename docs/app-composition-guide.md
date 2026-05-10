@@ -42,3 +42,6 @@ Windows simulation apps currently demonstrate this split: they perform startup c
 - [Runtime startup flow](./runtime-startup-flow.md)
 - [Provider requirement model](./provider-requirement-model.md)
 - [How to debug startup provider failure](./how-to-debug-startup-provider-failure.md)
+- [Replay scenario format](./replay-scenario-format.md)
+- [How to add replay scenario](./how-to-add-replay-scenario.md)
+

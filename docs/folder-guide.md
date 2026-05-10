@@ -13,6 +13,8 @@ This guide describes what belongs in each major workspace directory and what mus
 - [Provider Requirement Model](./provider-requirement-model.md)
 - [App Composition Guide](./app-composition-guide.md)
 - [How to debug startup provider failure](./how-to-debug-startup-provider-failure.md)
+- [Replay Scenario Format](./replay-scenario-format.md)
+- [How to Add Replay Scenario](./how-to-add-replay-scenario.md)
 
 ## `apps/`
 
