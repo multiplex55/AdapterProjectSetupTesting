@@ -299,6 +299,7 @@ version = "0.1.0"
 dependencies = [
  "adapter-ethernet",
  "adapter-windows-sim",
+ "core",
  "runtime",
 ]
 
@@ -308,6 +309,7 @@ version = "0.1.0"
 dependencies = [
  "adapter-ethernet",
  "adapter-windows-sim",
+ "core",
  "runtime",
 ]
 
