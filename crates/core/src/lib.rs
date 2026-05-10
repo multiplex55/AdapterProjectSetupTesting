@@ -1,83 +1,81 @@
 //! core skeleton crate.
 
+pub mod algorithms;
+pub mod domain;
+pub mod services;
+pub mod state;
+
 pub fn crate_name() -> &'static str {
     "core"
 }
 
 #[cfg(test)]
 mod tests {
-    use ports::{
-        AlgorithmProvider, Clock, ClockError, DataSource, DataSourceError, MessagePublisher,
-        MessageSubscriber, ProviderError, TelemetryError, TelemetrySink, TransportError,
-    };
+    use crate::domain::{CoreError, InputFrame};
+    use crate::services::CoreService;
+    use messages::common::MessageType;
+    use ports::{AlgorithmProvider, ProviderError};
 
-    struct Mock;
+    struct DeterministicProvider;
 
-    impl DataSource for Mock {
-        type Item = u8;
-
-        fn read(&self) -> Result<Self::Item, DataSourceError> {
-            Ok(1)
-        }
-    }
-
-    impl MessagePublisher for Mock {
-        type Message = u8;
-
-        fn publish(&self, _message: Self::Message) -> Result<(), TransportError> {
-            Ok(())
-        }
-    }
-
-    impl MessageSubscriber for Mock {
-        type Message = u8;
-
-        fn receive(&self) -> Result<Self::Message, TransportError> {
-            Ok(2)
-        }
-    }
-
-    impl Clock for Mock {
-        type Instant = u64;
-
-        fn now(&self) -> Result<Self::Instant, ClockError> {
-            Ok(42)
-        }
-    }
-
-    impl TelemetrySink for Mock {
-        type Event = &'static str;
-
-        fn emit(&self, _event: Self::Event) -> Result<(), TelemetryError> {
-            Ok(())
-        }
-    }
-
-    impl AlgorithmProvider for Mock {
-        type Input = u8;
-        type Output = u16;
+    impl AlgorithmProvider for DeterministicProvider {
+        type Input = InputFrame;
+        type Output = Vec<u8>;
 
         fn compute(&self, input: Self::Input) -> Result<Self::Output, ProviderError> {
-            Ok(input as u16)
+            let mut out = input.payload;
+            out.reverse();
+            Ok(out)
+        }
+    }
+
+    fn fixed_input(sequence: u64) -> InputFrame {
+        InputFrame {
+            protocol_version: 1,
+            sequence,
+            message_type: MessageType::Target5Status,
+            payload: vec![1, 2, 3, 4],
         }
     }
 
     #[test]
-    fn trait_objects_are_usable_from_core() {
-        let mock = Mock;
+    fn deterministic_outputs_from_fixed_inputs() {
+        let mut service = CoreService::new(DeterministicProvider);
+        let output = service.process(fixed_input(10)).expect("processing works");
+        assert_eq!(output.payload, vec![4, 3, 2, 1]);
+        assert_eq!(output.sequence, 10);
+        assert_eq!(service.state().processed_count, 1);
+    }
 
-        let source: &dyn DataSource<Item = u8> = &mock;
-        let publisher: &dyn MessagePublisher<Message = u8> = &mock;
-        let subscriber: &dyn MessageSubscriber<Message = u8> = &mock;
-        let clock: &dyn Clock<Instant = u64> = &mock;
-        let telemetry: &dyn TelemetrySink<Event = &'static str> = &mock;
-        let provider: &dyn AlgorithmProvider<Input = u8, Output = u16> = &mock;
+    #[test]
+    fn state_transition_invariant_enforces_monotonic_sequence() {
+        let mut service = CoreService::new(DeterministicProvider);
 
-        assert_eq!(source.read().ok(), Some(1));
-        assert!(publisher.publish(9).is_ok());
-        assert_eq!(subscriber.receive().ok(), Some(2));
-        assert_eq!(clock.now().ok(), Some(42));
-        assert!(telemetry.emit("tick").is_ok());
-        assert_eq!(provider.compute(7).ok(), Some(7));
+        let _ = service.process(fixed_input(20)).expect("first frame ok");
+        let err = service
+            .process(fixed_input(20))
+            .expect_err("same sequence must fail");
+
+        assert_eq!(
+            err,
+            CoreError::InvalidStateTransition("sequence must strictly increase")
+        );
+    }
+
+    #[test]
+    fn unsupported_message_version_is_mapped_from_messages_helper() {
+        let mut service = CoreService::new(DeterministicProvider);
+        let mut input = fixed_input(1);
+        input.protocol_version = 99;
+
+        let err = service.process(input).expect_err("unsupported version");
+        assert_eq!(
+            err,
+            CoreError::UnsupportedMessageVersion {
+                found: 99,
+                min: 1,
+                max: 1,
+            }
+        );
     }
 }
