@@ -10,3 +10,4 @@ workspace = true
 [dependencies]
 plugins-api = { path = "../api" }
 messages = { path = "../../messages" }
+

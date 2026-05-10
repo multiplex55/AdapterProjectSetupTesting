@@ -21,6 +21,7 @@ fn valid_plugin_accepted() {
         path,
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let outcome = load_plugin(&req).expect("plugin should load");
     assert!(matches!(outcome, LoadOutcome::Loaded(_)));
@@ -34,6 +35,7 @@ fn abi_mismatch_rejected() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let err = load_plugin(&req).expect_err("abi mismatch expected");
     assert_eq!(err.plugin_path_attempted, path);
@@ -48,6 +50,7 @@ fn missing_optional_plugin_falls_back() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: false,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let outcome = load_plugin(&req).expect("optional missing should not fail");
     assert!(
@@ -63,12 +66,12 @@ fn missing_required_plugin_fails_startup() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let err = load_plugin(&req).expect_err("required missing should fail");
     assert_eq!(err.plugin_path_attempted, path);
     assert!(matches!(err.reason, LoadErrorKind::NotFound));
 }
-
 
 #[test]
 fn missing_descriptor_symbol_fails_with_typed_error() {
@@ -78,6 +81,7 @@ fn missing_descriptor_symbol_fails_with_typed_error() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let err = load_plugin(&req).expect_err("missing descriptor symbol should fail");
     assert_eq!(err.plugin_path_attempted, path);
@@ -95,6 +99,7 @@ fn missing_function_table_symbol_fails_with_typed_error() {
         path: path.clone(),
         expected_capability: Capability::Compute,
         required: true,
+        strategy: plugins_loader::LoadStrategy::Simulated,
     };
     let err = load_plugin(&req).expect_err("missing function table symbol should fail");
     assert_eq!(err.plugin_path_attempted, path);
