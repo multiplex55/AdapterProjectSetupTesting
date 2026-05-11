@@ -8,9 +8,17 @@ pub struct Target10State {
 }
 
 impl Target10State {
-    pub fn apply(&mut self, status: Target5Status, command: Target10Command) {
+    pub fn record_status(&mut self, status: Target5Status) {
         self.last_seen_status = Some(status);
+    }
+
+    pub fn enqueue_command(&mut self, command: Target10Command) {
         self.last_command = Some(command);
         self.applied_events += 1;
+    }
+
+    pub fn apply(&mut self, status: Target5Status, command: Target10Command) {
+        self.record_status(status);
+        self.enqueue_command(command);
     }
 }

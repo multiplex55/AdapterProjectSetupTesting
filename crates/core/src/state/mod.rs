@@ -1,42 +1,16 @@
-use crate::domain::{CoreError, InputFrame};
+//! Core domain state ownership boundaries.
+//!
+//! Ownership rules:
+//! - Domain decision state lives in `core/state`.
+//! - Lifecycle/process state belongs in runtime crates.
+//! - Handles/sockets/drivers belong in adapter crates.
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SimulationState {
-    pub initialized: bool,
-    pub last_sequence: Option<u64>,
-    pub processed_count: u64,
-}
+mod link;
+mod processing;
+mod target10;
+mod target5;
 
-impl Default for SimulationState {
-    fn default() -> Self {
-        Self {
-            initialized: true,
-            last_sequence: None,
-            processed_count: 0,
-        }
-    }
-}
-
-impl SimulationState {
-    pub fn advance(&mut self, frame: &InputFrame) -> Result<(), CoreError> {
-        if !self.initialized {
-            return Err(CoreError::InvalidStateTransition("state not initialized"));
-        }
-
-        if frame.payload.is_empty() {
-            return Err(CoreError::InvalidInput("payload cannot be empty"));
-        }
-
-        if let Some(previous) = self.last_sequence {
-            if frame.sequence <= previous {
-                return Err(CoreError::InvalidStateTransition(
-                    "sequence must strictly increase",
-                ));
-            }
-        }
-
-        self.last_sequence = Some(frame.sequence);
-        self.processed_count += 1;
-        Ok(())
-    }
-}
+pub use link::LinkState;
+pub use processing::CoreProcessingState;
+pub use target10::Target10State;
+pub use target5::Target5State;
