@@ -6,6 +6,7 @@ pub enum ProfileId {
     Target10Real,
     WindowsTarget5Sim,
     WindowsTarget10Sim,
+    /// Non-primary replay profile retained for scenario and diagnostics workflows.
     ReplayRunner,
 }
 
@@ -36,9 +37,14 @@ pub enum InputMode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CommType {
+    /// Physical ethernet transport used by real hardware targets.
     Ethernet,
-    Serial,
-    Loopback,
+    /// Extension placeholder for real or emulated CommType1 transport integrations.
+    CommType1,
+    /// Extension placeholder for real or emulated CommType2 transport integrations.
+    CommType2,
+    /// Host-local loopback ethernet transport for simulation and replay workflows.
+    LoopbackEthernet,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -52,22 +58,34 @@ pub struct AppProfile {
 impl AppProfile {
     pub fn new(id: ProfileId) -> Self {
         match id {
-            ProfileId::Target5Real | ProfileId::Target10Real => Self {
+            ProfileId::Target5Real => Self {
                 id,
-                enabled_comms: vec![CommType::Ethernet, CommType::Serial],
-                disabled_comms: vec![CommType::Loopback],
+                enabled_comms: vec![CommType::Ethernet],
+                disabled_comms: vec![CommType::CommType1, CommType::CommType2, CommType::LoopbackEthernet],
                 input_mode: InputMode::Live,
             },
-            ProfileId::WindowsTarget5Sim | ProfileId::WindowsTarget10Sim => Self {
+            ProfileId::Target10Real => Self {
                 id,
-                enabled_comms: vec![CommType::Loopback],
-                disabled_comms: vec![CommType::Ethernet, CommType::Serial],
+                enabled_comms: vec![CommType::Ethernet, CommType::CommType1, CommType::CommType2],
+                disabled_comms: vec![CommType::LoopbackEthernet],
+                input_mode: InputMode::Live,
+            },
+            ProfileId::WindowsTarget5Sim => Self {
+                id,
+                enabled_comms: vec![CommType::LoopbackEthernet],
+                disabled_comms: vec![CommType::Ethernet, CommType::CommType1, CommType::CommType2],
+                input_mode: InputMode::Simulated,
+            },
+            ProfileId::WindowsTarget10Sim => Self {
+                id,
+                enabled_comms: vec![CommType::LoopbackEthernet, CommType::CommType1, CommType::CommType2],
+                disabled_comms: vec![CommType::Ethernet],
                 input_mode: InputMode::Simulated,
             },
             ProfileId::ReplayRunner => Self {
                 id,
-                enabled_comms: vec![CommType::Loopback],
-                disabled_comms: vec![CommType::Ethernet, CommType::Serial],
+                enabled_comms: vec![CommType::LoopbackEthernet],
+                disabled_comms: vec![CommType::Ethernet, CommType::CommType1, CommType::CommType2],
                 input_mode: InputMode::Replay,
             },
         }

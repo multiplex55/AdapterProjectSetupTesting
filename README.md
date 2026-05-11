@@ -87,3 +87,13 @@ cargo run -p scenario-runner -- --help
 ```
 
 Use optional tooling to validate behavior, but treat the architecture/dependency docs as the primary source of truth.
+
+## Runtime profile matrix
+
+| ProfileId | Input mode | Enabled transports | Disabled transports | Intent |
+| --- | --- | --- | --- | --- |
+| `Target5Real` | `Live` | `Ethernet` | `CommType1`, `CommType2`, `LoopbackEthernet` | Real Target5 hardware runtime. |
+| `Target10Real` | `Live` | `Ethernet`, `CommType1`, `CommType2` | `LoopbackEthernet` | Real Target10 hardware runtime. |
+| `WindowsTarget5Sim` | `Simulated` | `LoopbackEthernet` | `Ethernet`, `CommType1`, `CommType2` | Windows Target5 simulation runtime. |
+| `WindowsTarget10Sim` | `Simulated` | `LoopbackEthernet`, `CommType1`, `CommType2` | `Ethernet` | Windows Target10 simulation runtime with simulated CommType1/CommType2 pathways. |
+| `ReplayRunner` | `Replay` | `LoopbackEthernet` | `Ethernet`, `CommType1`, `CommType2` | Non-primary replay profile retained for scenario replay workflows. |

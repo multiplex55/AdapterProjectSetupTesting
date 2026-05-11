@@ -338,3 +338,13 @@ This section is intentionally non-primary and exists for supporting validation w
 - Build/test automation and CI policy docs: repository CI configuration + testing scope docs
 
 Primary placement decisions should be made using the sections above and validated against [`docs/dependency-rules.md`](./dependency-rules.md).
+
+## Runtime profile matrix reference
+
+Runtime profile transport posture is centralized in `crates/runtime/src/app_profile.rs` and currently follows:
+
+- `Target5Real`: `Ethernet` only (real hardware).
+- `Target10Real`: `Ethernet`, `CommType1`, `CommType2` (real hardware + extended transports).
+- `WindowsTarget5Sim`: `LoopbackEthernet` only (simulation).
+- `WindowsTarget10Sim`: `LoopbackEthernet` plus simulated `CommType1`/`CommType2` pathways.
+- `ReplayRunner`: non-primary replay profile using `LoopbackEthernet` for scenario workflows.
