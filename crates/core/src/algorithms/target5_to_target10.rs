@@ -14,12 +14,12 @@ pub fn map_target5_status_to_target10_command(
         (2000_u32, "standby", 5_u8)
     };
 
-    let command_id = base
-        .checked_add(status.device_id)
-        .ok_or(Target5ToTarget10Error::CommandIdOverflow {
-            device_id: status.device_id,
-            online: status.online,
-        })?;
+    let command_id =
+        base.checked_add(status.device_id)
+            .ok_or(Target5ToTarget10Error::CommandIdOverflow {
+                device_id: status.device_id,
+                online: status.online,
+            })?;
 
     Ok(Target10Command {
         command_id,
