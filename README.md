@@ -54,6 +54,16 @@ Common extension routes in this workspace:
 - **DLL/SO provider extension:** introduce provider/plugin loading behavior in `crates/plugins/*` and runtime composition where appropriate.
 - **C FFI extension:** add ABI bindings/surfaces in `crates/ffi/*` and keep unsafe usage isolated there (or designated adapter crates).
 
+
+### Algorithms vs flows placement example
+
+Concrete Target5 → Target10 placement:
+
+- `crates/core/src/algorithms/target5_to_target10.rs` keeps the pure mapping transform (`Target5Status` -> `Target10Command`).
+- `crates/core/src/flows/target5_to_target10.rs` provides orchestration API and flow-level typed error surface for use-case callers.
+
+Use this split whenever a transform remains stateless but call sequencing/policy ownership needs an explicit flow boundary.
+
 ## Linux roadmap
 
 For Linux target-build planning and phased execution details, see:

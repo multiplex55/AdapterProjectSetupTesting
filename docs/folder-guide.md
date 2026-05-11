@@ -87,6 +87,10 @@ Deterministic domain algorithms and decision logic.
 - Add a domain scoring algorithm.
 - Refine deterministic validation logic for a domain operation.
 
+Placement example:
+- `algorithms/target5_to_target10.rs`: pure status->command transform logic.
+- `flows/target5_to_target10.rs`: orchestration API that sequences transform usage and surfaces flow-level errors.
+
 ## `crates/core/flows`
 
 ### Purpose
