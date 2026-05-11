@@ -1,49 +1,58 @@
 # Adapter Project Setup Testing
 
-## Purpose of this repository
+## Primary repository story
 
-This workspace is an architecture-first foundation for building and validating two real application variants plus their Windows simulation counterparts:
+This workspace is organized around **four application entrypoints** that compose the same architecture for different deployment contexts:
 
-- `apps/target5-app`: real Target5 application composition.
-- `apps/target10-app`: real Target10 application composition.
-- `apps/windows-target5-sim`: Windows simulation composition for Target5-oriented flows.
-- `apps/windows-target10-sim`: Windows simulation composition for Target10-oriented flows.
+- `apps/target5-app`: real Target5 deployment composition.
+- `apps/target10-app`: real Target10 deployment composition.
+- `apps/windows-target5-sim`: Windows simulation composition for Target5-oriented behavior.
+- `apps/windows-target10-sim`: Windows simulation composition for Target10-oriented behavior.
 
-The repository is designed to let teams evolve domain behavior, adapter integrations, and runtime composition safely while preserving strict layer boundaries and clear extension seams.
+The primary goal is to keep domain behavior stable while letting runtime and adapter wiring vary by app profile.
 
-It also serves as an extension sandbox where new algorithms, control flows, adapters, plugin/provider implementations, and C/FFI integration surfaces can be added without violating dependency rules.
+## Crate responsibilities
 
-## Core architecture principles
+- `crates/core`: pure domain model, algorithms, and flows. Depends only on `crates/ports` and `crates/messages`.
+- `crates/runtime`: startup lifecycle, orchestration, and effect dispatch coordination.
+- `crates/messages`: centralized cross-layer payload contracts.
+- `crates/ports`: boundary traits/capabilities implemented by runtime/adapters/plugins.
+- `crates/adapters/*`: concrete environment/protocol integrations.
+- `crates/ffi/*`: C/ABI boundaries and isolated unsafe interop.
+- `crates/plugins/*`: plugin contracts and loader extension points.
 
-This repository enforces three non-negotiable principles:
+These responsibilities must remain aligned with [`docs/dependency-rules.md`](docs/dependency-rules.md).
 
-1. **Core purity**
-   - `crates/core` is platform-agnostic domain logic and must depend only on `crates/ports` and `crates/messages`.
-   - `core` must not depend on `runtime`, `adapters`, `plugins`, or `ffi` crates.
+## Composition-only `main.rs` rule
 
-2. **Message contract centralization**
-   - Cross-layer payloads belong in `crates/messages`.
-   - Do not create ad hoc per-adapter or per-app contracts when payloads are exchanged across layers.
+Every app `main.rs` under `apps/*` is a **composition root only**:
 
-3. **Composition-only applications**
-   - `apps/*` are composition roots only: wire dependencies, configuration, and startup.
-   - Domain/business behavior belongs in `core` (and port-driven implementations), not in executable entrypoints.
+- select config/profile;
+- wire runtime + adapter implementations;
+- start runtime lifecycle.
 
-For authoritative allowed/forbidden dependency edges, see [`docs/dependency-rules.md`](docs/dependency-rules.md).
+Do **not** place domain/business logic in app entrypoints. Domain logic belongs in `crates/core` and must not gain dependencies on `runtime`, `adapters`, `ffi`, or `plugins`.
+
+## Short glossary
+
+- **Algorithm**: deterministic domain rule/calculation (usually in `crates/core/algorithms`).
+- **Flow**: domain use-case orchestration sequence that coordinates algorithms and ports (usually in `crates/core/flows`).
+- **Effect**: an outward action request produced by core flow outcomes and carried through runtime to adapter implementations.
+- **Domain state**: business-level state owned by core types/invariants, independent of platform/runtime.
+- **Runtime state**: process/lifecycle/diagnostic state managed by runtime startup and orchestration.
+- **Adapter state**: integration-specific protocol/device/session state maintained inside concrete adapters.
 
 ## Folder ownership map
 
-Use [`docs/folder-guide.md`](docs/folder-guide.md) as the canonical placement guide. Quick ownership summary:
+Use [`docs/folder-guide.md`](docs/folder-guide.md) as the canonical “put X here” placement guide.
 
-- `apps/*`: executable composition roots.
-- `crates/core/*`: domain model, algorithms, control flows.
-- `crates/messages`: canonical cross-layer contracts.
-- `crates/ports`: interfaces and abstractions used by `core` and implementations.
-- `crates/runtime`: orchestration and lifecycle behavior.
-- `crates/adapters/*`: concrete environment/protocol/target integrations.
-- `crates/ffi/*`: C/ABI boundary crates and unsafe isolation zones.
-- `crates/plugins/*`: plugin API/loader extension surfaces.
+## Runtime profiles
 
+For profile-to-adapter selection behavior (real vs simulation wiring), see [`docs/application-profile-matrix.md`](docs/application-profile-matrix.md).
+
+## Startup + dispatch path
+
+For startup lifecycle and core-to-runtime-to-adapter dispatch framing, see [`docs/runtime-startup-flow.md`](docs/runtime-startup-flow.md).
 
 ## Choose the right guide
 
@@ -58,50 +67,12 @@ Use [`docs/folder-guide.md`](docs/folder-guide.md) as the canonical placement gu
 | Add C ABI wrapper/bindings | [`docs/how-to-add-c-ffi-wrapper.md`](docs/how-to-add-c-ffi-wrapper.md) |
 | Unsure where code belongs | [`docs/folder-guide.md`](docs/folder-guide.md) |
 
-## Extension pathways
+## Optional / later validation tooling
 
-Common extension routes in this workspace:
+These are useful, but secondary to the architecture and composition story above:
 
-- **Algorithm extension:** add domain decision logic in `crates/core/algorithms`.
-- **Control-flow extension:** add or evolve orchestrated business flows in `crates/core/flows`.
-- **Adapter extension:** add/modify concrete integrations in `crates/adapters/*` while preserving port/message contracts.
-- **DLL/SO provider extension:** introduce provider/plugin loading behavior in `crates/plugins/*` and runtime composition where appropriate.
-- **C FFI extension:** add ABI bindings/surfaces in `crates/ffi/*` and keep unsafe usage isolated there (or designated adapter crates).
+- `scenarios/`: optional scenario/replay assets.
+- `tests/`: optional integration/contract validation suites.
+- CI/policy docs: automation scope and enforcement references.
 
-
-### Algorithms vs flows placement example
-
-Concrete Target5 → Target10 placement:
-
-- `crates/core/src/algorithms/target5_to_target10.rs` keeps the pure mapping transform (`Target5Status` -> `Target10Command`).
-- `crates/core/src/flows/target5_to_target10.rs` provides orchestration API and flow-level typed error surface for use-case callers.
-
-Use this split whenever a transform remains stateless but call sequencing/policy ownership needs an explicit flow boundary.
-
-## Linux roadmap
-
-For Linux target-build planning and phased execution details, see:
-
-- [`docs/linux-target-build-roadmap.md`](docs/linux-target-build-roadmap.md)
-
-This roadmap is aspirational and **not** an active build contract yet.
-
-## Optional validation/scenario tooling
-
-These references are optional support tooling and **not the primary repository story**.
-They are also **not required for adding Target5/Target10 features**.
-
-- `scenarios/`: scenario artifacts and replay inputs used for optional verification workflows.
-- `tests/`: workspace/system validation assets used to exercise buildable slices.
-- Repository CI/policy docs: automation and governance references for validation scope.
-
-Use this tooling when you want extra confidence checks, while treating architecture and dependency guides as the primary source of truth.
-
-## Runtime profile matrix
-
-| ProfileId | Input mode | Enabled transports | Disabled transports | Intent |
-| --- | --- | --- | --- | --- |
-| `Target5Real` | `Live` | `Ethernet` | `CommType1`, `CommType2`, `LoopbackEthernet` | Real Target5 hardware runtime. |
-| `Target10Real` | `Live` | `Ethernet`, `CommType1`, `CommType2` | `LoopbackEthernet` | Real Target10 hardware runtime. |
-| `WindowsTarget5Sim` | `Simulated` | `LoopbackEthernet` | `Ethernet`, `CommType1`, `CommType2` | Windows Target5 simulation runtime. |
-| `WindowsTarget10Sim` | `Simulated` | `LoopbackEthernet`, `CommType1`, `CommType2` | `Ethernet` | Windows Target10 simulation runtime with simulated CommType1/CommType2 pathways. |
+Use them for confidence-building and rollout validation, not as the primary architecture contract.

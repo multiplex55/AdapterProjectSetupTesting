@@ -1,5 +1,7 @@
 # Folder Guide (Canonical Placement)
 
+This guide defines ownership boundaries with explicit “put X here” placement guidance.
+
 This is the canonical file-placement guide for the workspace. It is aligned to [`docs/dependency-rules.md`](./dependency-rules.md) and is intentionally explicit about what belongs where.
 
 ## `apps/target5-app`
@@ -335,14 +337,13 @@ Linux target-build planning is tracked in [`docs/linux-target-build-roadmap.md`]
 
 This roadmap is aspirational and **not** an active build contract.
 
-## Optional validation/scenario tooling
+## Optional / later validation tooling
 
-These references are optional support tooling and **not the primary repository story**.
-They are also **not required for adding Target5/Target10 features**.
+Use these only after primary placement and ownership boundaries are correct.
 
-- `scenarios/`: scenario assets and replay inputs for optional verification workflows.
-- `tests/`: integration/contract/system validation assets.
-- Repository CI/policy docs: build/test automation guidance and validation scope references.
+- `scenarios/`: optional scenario/replay assets.
+- `tests/`: optional integration/contract/system validation assets.
+- Repository CI/policy docs: optional automation and policy narratives.
 
 Primary placement decisions should be made using the sections above and validated against [`docs/dependency-rules.md`](./dependency-rules.md).
 
