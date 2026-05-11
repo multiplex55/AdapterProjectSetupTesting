@@ -70,6 +70,8 @@ For Linux target-build planning and phased execution details, see:
 
 - [`docs/linux-target-build-roadmap.md`](docs/linux-target-build-roadmap.md)
 
+This roadmap is aspirational and **not** an active build contract yet.
+
 ## Optional validation/scenario tooling
 
 The following are useful but **non-primary** architecture references:

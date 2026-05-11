@@ -329,6 +329,12 @@ Plugin API and loader extension surfaces.
 - Add plugin capability metadata.
 - Extend plugin loader validation behavior.
 
+## Linux target-build roadmap (non-contract)
+
+Linux target-build planning is tracked in [`docs/linux-target-build-roadmap.md`](./linux-target-build-roadmap.md).
+
+This roadmap is aspirational and **not** an active build contract.
+
 ## Optional validation/scenario/CI references (non-primary)
 
 This section is intentionally non-primary and exists for supporting validation workflows.
