@@ -2,6 +2,7 @@
 
 pub mod algorithms;
 pub mod domain;
+pub mod flows;
 pub mod services;
 pub mod state;
 
