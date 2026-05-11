@@ -88,21 +88,14 @@ This roadmap is aspirational and **not** an active build contract yet.
 
 ## Optional validation/scenario tooling
 
-The following are useful but **non-primary** architecture references:
+These references are optional support tooling and **not the primary repository story**.
+They are also **not required for adding Target5/Target10 features**.
 
-- Scenario artifacts and replay inputs under `scenarios/`.
-- Workspace/system validation under `tests/`.
-- CI and automation policy/docs that validate buildable slices and boundary conformance.
+- `scenarios/`: scenario artifacts and replay inputs used for optional verification workflows.
+- `tests/`: workspace/system validation assets used to exercise buildable slices.
+- Repository CI/policy docs: automation and governance references for validation scope.
 
-Representative commands:
-
-```bash
-cargo metadata --format-version 1
-cargo check --workspace
-cargo run -p scenario-runner -- --help
-```
-
-Use optional tooling to validate behavior, but treat the architecture/dependency docs as the primary source of truth.
+Use this tooling when you want extra confidence checks, while treating architecture and dependency guides as the primary source of truth.
 
 ## Runtime profile matrix
 
@@ -112,4 +105,3 @@ Use optional tooling to validate behavior, but treat the architecture/dependency
 | `Target10Real` | `Live` | `Ethernet`, `CommType1`, `CommType2` | `LoopbackEthernet` | Real Target10 hardware runtime. |
 | `WindowsTarget5Sim` | `Simulated` | `LoopbackEthernet` | `Ethernet`, `CommType1`, `CommType2` | Windows Target5 simulation runtime. |
 | `WindowsTarget10Sim` | `Simulated` | `LoopbackEthernet`, `CommType1`, `CommType2` | `Ethernet` | Windows Target10 simulation runtime with simulated CommType1/CommType2 pathways. |
-| `ReplayRunner` | `Replay` | `LoopbackEthernet` | `Ethernet`, `CommType1`, `CommType2` | Non-primary replay profile retained for scenario replay workflows. |

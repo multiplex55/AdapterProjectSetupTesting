@@ -335,13 +335,14 @@ Linux target-build planning is tracked in [`docs/linux-target-build-roadmap.md`]
 
 This roadmap is aspirational and **not** an active build contract.
 
-## Optional validation/scenario/CI references (non-primary)
+## Optional validation/scenario tooling
 
-This section is intentionally non-primary and exists for supporting validation workflows.
+These references are optional support tooling and **not the primary repository story**.
+They are also **not required for adding Target5/Target10 features**.
 
-- Scenario assets: `scenarios/`
-- Integration/contract/system tests: `tests/`
-- Build/test automation and CI policy docs: repository CI configuration + testing scope docs
+- `scenarios/`: scenario assets and replay inputs for optional verification workflows.
+- `tests/`: integration/contract/system validation assets.
+- Repository CI/policy docs: build/test automation guidance and validation scope references.
 
 Primary placement decisions should be made using the sections above and validated against [`docs/dependency-rules.md`](./dependency-rules.md).
 
@@ -353,4 +354,3 @@ Runtime profile transport posture is centralized in `crates/runtime/src/app_prof
 - `Target10Real`: `Ethernet`, `CommType1`, `CommType2` (real hardware + extended transports).
 - `WindowsTarget5Sim`: `LoopbackEthernet` only (simulation).
 - `WindowsTarget10Sim`: `LoopbackEthernet` plus simulated `CommType1`/`CommType2` pathways.
-- `ReplayRunner`: non-primary replay profile using `LoopbackEthernet` for scenario workflows.
