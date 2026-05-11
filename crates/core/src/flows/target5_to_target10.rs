@@ -1,7 +1,7 @@
 use crate::algorithms::target5_to_target10::{
     map_target5_status_to_target10_command, Target5ToTarget10Error,
 };
-use crate::flows::target10::Target10State;
+use crate::state::Target10State;
 use messages::{Target10Command, Target5Status};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -39,7 +39,7 @@ mod tests {
         run_target5_to_target10_flow, Target5ToTarget10Effect, Target5ToTarget10FlowError,
     };
     use crate::algorithms::target5_to_target10::Target5ToTarget10Error;
-    use crate::flows::target10::Target10State;
+    use crate::state::Target10State;
     use messages::Target5Status;
 
     #[test]

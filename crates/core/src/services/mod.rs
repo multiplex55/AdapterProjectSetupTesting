@@ -1,6 +1,6 @@
 use crate::algorithms::process_frame_with_provider;
 use crate::domain::{CoreError, InputFrame, OutputFrame};
-use crate::state::SimulationState;
+use crate::state::CoreProcessingState;
 use messages::versioning::{validate_protocol_version, VersioningError};
 use ports::AlgorithmProvider;
 
@@ -9,7 +9,7 @@ where
     P: AlgorithmProvider<Input = InputFrame, Output = Vec<u8>>,
 {
     provider: P,
-    state: SimulationState,
+    state: CoreProcessingState,
 }
 
 impl<P> CoreService<P>
@@ -19,17 +19,17 @@ where
     pub fn new(provider: P) -> Self {
         Self {
             provider,
-            state: SimulationState::default(),
+            state: CoreProcessingState::default(),
         }
     }
 
-    pub fn state(&self) -> &SimulationState {
+    pub fn state(&self) -> &CoreProcessingState {
         &self.state
     }
 
     pub fn process(&mut self, input: InputFrame) -> Result<OutputFrame, CoreError> {
         validate_protocol_version(input.protocol_version).map_err(map_versioning_error)?;
-        self.state.advance(&input)?;
+        self.state.record_processed_frame(&input)?;
         process_frame_with_provider(&self.provider, input)
     }
 }
