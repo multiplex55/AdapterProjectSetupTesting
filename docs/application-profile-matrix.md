@@ -1,31 +1,34 @@
 # Application Profile Matrix
 
-This document maps runtime app profiles to their communication posture and intended binaries.
+This document maps runtime profiles to **real-vs-sim adapter selection** and intended app entrypoints.
 
 ## Source of truth
 
 - Runtime profile definitions: [`crates/runtime/src/app_profile.rs`](../crates/runtime/src/app_profile.rs).
 - App composition entrypoints: [`apps/target5-app/src/main.rs`](../apps/target5-app/src/main.rs), [`apps/target10-app/src/main.rs`](../apps/target10-app/src/main.rs), [`apps/windows-target5-sim/src/main.rs`](../apps/windows-target5-sim/src/main.rs), [`apps/windows-target10-sim/src/main.rs`](../apps/windows-target10-sim/src/main.rs).
 
-## Profile matrix
+## Profile matrix (real vs sim adapter posture)
 
-| Profile ID | Input mode | Enabled comm types | Disabled comm types | Intended app(s) |
-|---|---|---|---|---|
-| `target5-real` | `Live` | `Ethernet`, `Serial` | `Loopback` | `apps/target5-app` |
-| `target10-real` | `Live` | `Ethernet`, `Serial` | `Loopback` | `apps/target10-app` |
-| `windows-target5-sim` | `Simulated` | `Loopback` | `Ethernet`, `Serial` | `apps/windows-target5-sim` |
-| `windows-target10-sim` | `Simulated` | `Loopback` | `Ethernet`, `Serial` | `apps/windows-target10-sim` |
-| `replay-runner` | `Replay` | `Loopback` | `Ethernet`, `Serial` | `apps/tools/scenario-runner` and replay-oriented startup paths |
+| Profile ID | Environment | Primary adapter posture | Intended app(s) |
+|---|---|---|---|
+| `target5-real` | Real hardware | Real Target5 + real transport adapters (no sim loopback path) | `apps/target5-app` |
+| `target10-real` | Real hardware | Real Target10 + real transport adapters | `apps/target10-app` |
+| `windows-target5-sim` | Simulation | Windows simulation adapters + loopback/sim transports | `apps/windows-target5-sim` |
+| `windows-target10-sim` | Simulation | Windows simulation adapters + simulated CommType pathways | `apps/windows-target10-sim` |
 
-## Why this matters for composition-only app mains
+## Composition-only main reminder
 
-Application mains under `apps/*` are composition roots: they select a profile and wire runtime startup inputs, but they should not implement domain behavior. Keeping profile behavior centralized in runtime avoids duplicating transport/input policy across app binaries.
+Application `main.rs` files select a profile and wire runtime + adapters; they do not implement domain rules. Domain behavior remains in `crates/core`, which depends only on `ports` and `messages` per [`docs/dependency-rules.md`](./dependency-rules.md).
 
-That separation ensures:
+## Optional / later validation tooling
 
-- consistent profile behavior across all binaries;
-- lower risk of app-specific profile drift;
-- clean architecture boundaries where domain logic stays in `crates/core`.
+The following are optional and not part of primary profile ownership:
+
+- Replay/scenario runner paths.
+- Scenario assets under `scenarios/`.
+- CI narratives about replay-oriented checks.
+
+Use these as secondary validation layers after profile wiring is correct.
 
 ## Related docs
 
