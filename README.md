@@ -44,6 +44,20 @@ Use [`docs/folder-guide.md`](docs/folder-guide.md) as the canonical placement gu
 - `crates/ffi/*`: C/ABI boundary crates and unsafe isolation zones.
 - `crates/plugins/*`: plugin API/loader extension surfaces.
 
+
+## Choose the right guide
+
+| Change you need | Guide |
+| --- | --- |
+| Add pure business rule logic | [`docs/how-to-add-algorithm.md`](docs/how-to-add-algorithm.md) |
+| Add orchestration/use-case sequencing | [`docs/how-to-add-control-flow.md`](docs/how-to-add-control-flow.md) |
+| Add a concrete integration crate | [`docs/how-to-add-adapter.md`](docs/how-to-add-adapter.md) |
+| Implement a Target5 end-to-end feature | [`docs/how-to-add-target5-feature.md`](docs/how-to-add-target5-feature.md) |
+| Implement a Target10 end-to-end feature | [`docs/how-to-add-target10-feature.md`](docs/how-to-add-target10-feature.md) |
+| Add dynamic DLL/SO provider loading | [`docs/how-to-add-dll-so-backed-provider.md`](docs/how-to-add-dll-so-backed-provider.md) |
+| Add C ABI wrapper/bindings | [`docs/how-to-add-c-ffi-wrapper.md`](docs/how-to-add-c-ffi-wrapper.md) |
+| Unsure where code belongs | [`docs/folder-guide.md`](docs/folder-guide.md) |
+
 ## Extension pathways
 
 Common extension routes in this workspace:
