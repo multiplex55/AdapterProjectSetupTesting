@@ -36,3 +36,19 @@ This document defines the allowed crate dependency graph.
 
 - Target adapters: `adapters/target5`, `adapters/target10`, `adapters/commtype1`, `adapters/commtype2`; simulation adapters: `adapters/windows-sim` and `adapters/ethernet`.
 - C interop: raw declarations in `ffi/target-bindings`; safe wrappers in `adapters/c-drivers`; optional outward C surface in `ffi/c-api`.
+
+
+## Contributor boundary checklist (required for structural changes)
+
+Before opening a PR that touches crate boundaries, verify all of the following:
+
+1. `crates/core` still depends only on `crates/ports` and/or `crates/messages`.
+2. New cross-layer payload contracts were added in `crates/messages` (not ad hoc in adapters/runtime).
+3. Any intentional dependency-edge changes are reflected in this document.
+4. Major structural boundary decisions are captured in `docs/adr/`.
+
+Minimum validation commands:
+
+- `cargo metadata --format-version 1`
+- `cargo check --workspace`
+- `cargo run -p dep-audit` (if dependency policy checks were changed)
