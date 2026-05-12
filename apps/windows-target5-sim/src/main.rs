@@ -1,11 +1,13 @@
 use std::{collections::BTreeMap, env, fs};
 
+use adapter_ethernet::LoopbackEthernetTransport;
 use adapter_windows_sim::replay::ReplayEvent;
 use adapter_windows_sim::scenario::ReplayScenario;
-use core_crate::algorithms::target5_to_target10::map_target5_status_to_target10_command;
+use core_crate::flows::target5_to_target10::run_target5_to_target10_flow;
+use core_crate::state::Target10State;
 use runtime::{
-    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry,
-    ProviderSourceSpec, StartupConfig,
+    dispatch_target5_to_target10_effects, startup::startup, CapabilityKind, EffectDispatchState,
+    ProfileId, ProviderCandidate, ProviderRegistry, ProviderSourceSpec, StartupConfig,
 };
 
 fn parse_args() -> (&'static str, Option<String>) {
@@ -80,14 +82,16 @@ fn main() {
         let scenario =
             ReplayScenario::parse_json(&raw).expect("failed to parse canonical replay JSON");
         let mut commands_emitted = 0u64;
+        let mut flow_state = Target10State::default();
+        let mut dispatch_state = EffectDispatchState::default();
+        let (transport, _) = LoopbackEthernetTransport::pair();
+
         for event in scenario.events {
             if let ReplayEvent::Target5Status(status) = event.event {
-                let cmd =
-                    map_target5_status_to_target10_command(&status).expect("mapping must succeed");
-                println!(
-                    "command_out command_id={} action={} priority={}",
-                    cmd.command_id, cmd.action, cmd.priority
-                );
+                let effects = run_target5_to_target10_flow(&mut flow_state, status)
+                    .expect("flow failed with explicit error");
+                dispatch_target5_to_target10_effects(effects, &transport, &mut dispatch_state)
+                    .expect("effect dispatch failed with explicit error");
                 commands_emitted += 1;
             }
         }
