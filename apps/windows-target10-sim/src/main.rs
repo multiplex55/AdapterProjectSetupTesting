@@ -2,10 +2,9 @@ use std::{collections::BTreeMap, env, fs};
 
 use adapter_windows_sim::replay::ReplayEvent;
 use adapter_windows_sim::scenario::ReplayScenario;
-use core_crate::algorithms::target5_to_target10::map_target5_status_to_target10_command;
 use runtime::{
-    startup::startup, CapabilityKind, ProfileId, ProviderCandidate, ProviderRegistry,
-    ProviderSourceSpec, StartupConfig,
+    map_target5_statuses_to_target10_commands, startup::startup, CapabilityKind, ProfileId,
+    ProviderCandidate, ProviderRegistry, ProviderSourceSpec, StartupConfig,
 };
 
 fn parse_args() -> (&'static str, Option<String>) {
@@ -31,6 +30,8 @@ fn parse_args() -> (&'static str, Option<String>) {
 }
 
 fn main() {
+    // Composition-only: select profile, parse minimal config, build adapters, initialize state via runtime,
+    // and start the host/replay entrypoint. Domain mapping/flow logic stays in core/runtime.
     let (input_mode, replay_path) = parse_args();
     let scenario_source = replay_path.unwrap_or_else(|| {
         "scenarios/integration/target5_to_target10/sample-replay.json".to_string()
@@ -79,18 +80,22 @@ fn main() {
         let raw = fs::read_to_string(&scenario_source).expect("failed to read replay file");
         let scenario =
             ReplayScenario::parse_json(&raw).expect("failed to parse canonical replay JSON");
-        let mut commands_emitted = 0u64;
-        for event in scenario.events {
-            if let ReplayEvent::Target5Status(status) = event.event {
-                let cmd =
-                    map_target5_status_to_target10_command(&status).expect("mapping must succeed");
-                println!(
-                    "command_out command_id={} action={} priority={}",
-                    cmd.command_id, cmd.action, cmd.priority
-                );
-                commands_emitted += 1;
-            }
+        let statuses = scenario
+            .events
+            .into_iter()
+            .filter_map(|event| match event.event {
+                ReplayEvent::Target5Status(status) => Some(status),
+                ReplayEvent::Target10Command(_) => None,
+            });
+
+        let commands = map_target5_statuses_to_target10_commands(statuses)
+            .expect("replay mapping failed with explicit error");
+        for cmd in &commands {
+            println!(
+                "command_out command_id={} action={} priority={}",
+                cmd.command_id, cmd.action, cmd.priority
+            );
         }
-        println!("diagnostics.commands_emitted={commands_emitted}");
+        println!("diagnostics.commands_emitted={}", commands.len());
     }
 }

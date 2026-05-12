@@ -6,6 +6,8 @@ use runtime::{
 };
 
 fn main() {
+    // Composition-only: select profile, parse minimal startup config, construct adapters/providers,
+    // initialize runtime state, and call the runtime startup host function.
     let mut explicit_providers = BTreeMap::new();
     explicit_providers.insert(
         CapabilityKind::Compute,

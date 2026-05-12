@@ -26,12 +26,20 @@ mod tests {
 
     #[test]
     fn parses_sample_replay_fixture() {
-        let raw = include_str!("../../../../scenarios/integration/target5_to_target10/sample-replay.json");
+        let raw = include_str!(
+            "../../../../scenarios/integration/target5_to_target10/sample-replay.json"
+        );
         let scenario = ReplayScenario::parse_json(raw).expect("sample fixture should parse");
 
         assert_eq!(scenario.events.len(), 2);
-        assert!(matches!(scenario.events[0].event, ReplayEvent::Target5Status(_)));
-        assert!(matches!(scenario.events[1].event, ReplayEvent::Target5Status(_)));
+        assert!(matches!(
+            scenario.events[0].event,
+            ReplayEvent::Target5Status(_)
+        ));
+        assert!(matches!(
+            scenario.events[1].event,
+            ReplayEvent::Target5Status(_)
+        ));
     }
 
     #[test]
@@ -44,18 +52,22 @@ mod tests {
     #[test]
     fn rejects_missing_required_fields() {
         let raw = r#"{"events":[{"timestamp_ms":1000,"kind":"target5_status","payload":{"device_id":5,"online":true}}]}"#;
-        let err = ReplayScenario::parse_json(raw).expect_err("must fail when required fields are missing");
+        let err = ReplayScenario::parse_json(raw)
+            .expect_err("must fail when required fields are missing");
         assert!(matches!(err, ReplayParseError::MissingRequiredField { .. }));
     }
 
     #[test]
     fn rejects_invalid_event_order_and_malformed_fixture() {
-        let raw = include_str!("../../../../scenarios/integration/target5_to_target10/malformed-replay.json");
+        let raw = include_str!(
+            "../../../../scenarios/integration/target5_to_target10/malformed-replay.json"
+        );
         let err = ReplayScenario::parse_json(raw).expect_err("malformed fixture should fail");
         assert!(matches!(err, ReplayParseError::UnknownEventKind { .. }));
 
         let ordered_bad = r#"{"events":[{"timestamp_ms":2000,"kind":"target5_status","payload":{"device_id":5,"online":true,"sequence":1}},{"timestamp_ms":1000,"kind":"target5_status","payload":{"device_id":5,"online":false,"sequence":2}}]}"#;
-        let err2 = ReplayScenario::parse_json(ordered_bad).expect_err("must fail on decreasing timestamp");
+        let err2 =
+            ReplayScenario::parse_json(ordered_bad).expect_err("must fail on decreasing timestamp");
         assert!(matches!(err2, ReplayParseError::InvalidEventOrder { .. }));
     }
 }

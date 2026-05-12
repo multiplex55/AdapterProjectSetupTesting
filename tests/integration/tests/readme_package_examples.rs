@@ -38,10 +38,7 @@ fn readme_package_examples_reference_workspace_packages_only() {
         let marker = "cargo run -p ";
         if let Some(start) = line.find(marker) {
             let rest = &line[start + marker.len()..];
-            let name: String = rest
-                .chars()
-                .take_while(|c| !c.is_whitespace())
-                .collect();
+            let name: String = rest.chars().take_while(|c| !c.is_whitespace()).collect();
             if !name.is_empty() && !package_names.contains(&name) {
                 unknown_examples.push(name);
             }

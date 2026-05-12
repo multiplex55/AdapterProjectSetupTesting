@@ -28,31 +28,30 @@ impl ReplayScenario {
                 }
             }
 
-            let replay_event = match event.kind.as_str() {
-                "target5_status" => {
-                    let parsed = serde_json::from_value::<Target5Status>(event.payload).map_err(|source| {
-                        ReplayParseError::MissingRequiredField {
-                            kind: "target5_status".to_string(),
-                            message: source.to_string(),
-                        }
-                    })?;
-                    ReplayEvent::Target5Status(parsed)
-                }
-                "target10_command" => {
-                    let parsed = serde_json::from_value::<Target10Command>(event.payload).map_err(|source| {
-                        ReplayParseError::MissingRequiredField {
-                            kind: "target10_command".to_string(),
-                            message: source.to_string(),
-                        }
-                    })?;
-                    ReplayEvent::Target10Command(parsed)
-                }
-                other => {
-                    return Err(ReplayParseError::UnknownEventKind {
-                        kind: other.to_string(),
-                    })
-                }
-            };
+            let replay_event =
+                match event.kind.as_str() {
+                    "target5_status" => {
+                        let parsed = serde_json::from_value::<Target5Status>(event.payload)
+                            .map_err(|source| ReplayParseError::MissingRequiredField {
+                                kind: "target5_status".to_string(),
+                                message: source.to_string(),
+                            })?;
+                        ReplayEvent::Target5Status(parsed)
+                    }
+                    "target10_command" => {
+                        let parsed = serde_json::from_value::<Target10Command>(event.payload)
+                            .map_err(|source| ReplayParseError::MissingRequiredField {
+                                kind: "target10_command".to_string(),
+                                message: source.to_string(),
+                            })?;
+                        ReplayEvent::Target10Command(parsed)
+                    }
+                    other => {
+                        return Err(ReplayParseError::UnknownEventKind {
+                            kind: other.to_string(),
+                        })
+                    }
+                };
 
             last_timestamp = Some(event.timestamp_ms);
             events.push(TimedReplayEvent {

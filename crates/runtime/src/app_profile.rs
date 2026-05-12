@@ -61,7 +61,11 @@ impl AppProfile {
             ProfileId::Target5Real => Self {
                 id,
                 enabled_comms: vec![CommType::Ethernet],
-                disabled_comms: vec![CommType::CommType1, CommType::CommType2, CommType::LoopbackEthernet],
+                disabled_comms: vec![
+                    CommType::CommType1,
+                    CommType::CommType2,
+                    CommType::LoopbackEthernet,
+                ],
                 input_mode: InputMode::Live,
             },
             ProfileId::Target10Real => Self {
@@ -78,7 +82,11 @@ impl AppProfile {
             },
             ProfileId::WindowsTarget10Sim => Self {
                 id,
-                enabled_comms: vec![CommType::LoopbackEthernet, CommType::CommType1, CommType::CommType2],
+                enabled_comms: vec![
+                    CommType::LoopbackEthernet,
+                    CommType::CommType1,
+                    CommType::CommType2,
+                ],
                 disabled_comms: vec![CommType::Ethernet],
                 input_mode: InputMode::Simulated,
             },
