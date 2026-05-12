@@ -6,7 +6,7 @@ pub enum ProfileId {
     Target10Real,
     WindowsTarget5Sim,
     WindowsTarget10Sim,
-    /// Non-primary replay profile retained for scenario and diagnostics workflows.
+    /// Secondary profile for replay-centric diagnostics workflows.
     ReplayRunner,
 }
 
@@ -43,7 +43,7 @@ pub enum CommType {
     CommType1,
     /// Extension placeholder for real or emulated CommType2 transport integrations.
     CommType2,
-    /// Host-local loopback ethernet transport for simulation and replay workflows.
+    /// Host-local loopback ethernet transport for simulation and diagnostics workflows.
     LoopbackEthernet,
 }
 
