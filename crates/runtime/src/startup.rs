@@ -176,7 +176,7 @@ mod tests {
             },
         );
         let cfg = StartupConfig {
-            profile: ProfileId::ReplayRunner,
+            profile: ProfileId::WindowsTarget10Sim,
             plugin_search_paths: vec!["./plugins".into()],
             explicit_providers: explicit,
             required_capabilities: vec![
@@ -203,7 +203,7 @@ mod tests {
             },
         );
         let cfg = StartupConfig {
-            profile: ProfileId::ReplayRunner,
+            profile: ProfileId::WindowsTarget10Sim,
             plugin_search_paths: vec!["./plugins".into()],
             explicit_providers: explicit,
             required_capabilities: vec![CapabilityKind::Compute],
