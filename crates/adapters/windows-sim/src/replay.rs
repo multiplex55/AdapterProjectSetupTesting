@@ -13,10 +13,20 @@ pub enum ReplayParseError {
     InvalidFormat,
     InvalidSequence,
     InvalidPayload,
-    InvalidJson { message: String },
-    UnknownEventKind { kind: String },
-    MissingRequiredField { kind: String, message: String },
-    InvalidEventOrder { previous_timestamp_ms: u64, current_timestamp_ms: u64 },
+    InvalidJson {
+        message: String,
+    },
+    UnknownEventKind {
+        kind: String,
+    },
+    MissingRequiredField {
+        kind: String,
+        message: String,
+    },
+    InvalidEventOrder {
+        previous_timestamp_ms: u64,
+        current_timestamp_ms: u64,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -99,7 +99,11 @@ fn package_by_manifest<'a>(metadata: &'a Metadata, suffix: &str) -> &'a Package 
 }
 
 fn assert_dependencies(pkg: &Package, required: &[&str], forbidden: &[&str]) {
-    let dependency_names: HashSet<&str> = pkg.dependencies.iter().map(|dep| dep.name.as_str()).collect();
+    let dependency_names: HashSet<&str> = pkg
+        .dependencies
+        .iter()
+        .map(|dep| dep.name.as_str())
+        .collect();
 
     for required_dep in required {
         assert!(
