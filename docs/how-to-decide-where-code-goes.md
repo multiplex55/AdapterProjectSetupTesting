@@ -34,6 +34,15 @@ Use this routing table before adding new files. If a change touches more than on
 - Keep failures explicit and typed; never hide fallback behavior.
 - Keep target/platform forks out of `core`; fork only at adapter/wiring boundaries.
 
+
+## Structural change policy
+
+When introducing or changing architecture-level behavior (new orchestration layer, state ownership model, effect execution model), do all of the following in the same change:
+
+- Add/update an ADR in `docs/adr/`.
+- Cross-check wording in [Dependency rules](./dependency-rules.md) and update it if crate edges changed.
+- Prove `core` purity via workspace checks (`cargo metadata`, `cargo check --workspace`).
+
 ## Optional/later
 
 If you are planning deterministic diagnostics or simulation playback, see replay/scenario docs: [Replay scenario format](./replay-scenario-format.md) and [How to add replay scenario](./how-to-add-replay-scenario.md). This is optional and can be adopted later.
