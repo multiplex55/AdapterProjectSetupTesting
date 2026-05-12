@@ -3,6 +3,7 @@
 pub mod app_host;
 pub mod app_profile;
 pub mod diagnostics;
+pub mod effects;
 pub mod health;
 pub mod provider_registry;
 pub mod startup;
@@ -16,3 +17,5 @@ pub use provider_registry::{
     ProviderSourceSpec,
 };
 pub use startup::{StartupConfig, StartupError, StartupResult};
+
+pub use effects::{dispatch_target5_to_target10_effects, EffectDispatchError, EffectDispatchState};
